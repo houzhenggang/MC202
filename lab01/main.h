@@ -51,21 +51,20 @@ int cardinalidade( struct conjunto* c );
 
 /*Imprime na tela os elementos presentes na lista encadeada do conjunto c. Você não deve modificar esta função*/
 void listar_elementos( struct conjunto* c ){
-  struct lista_encadeada* pt;
-  if( !c ) return;
-  pt = c->lista;
-  printf("{");
-  while( pt->proximo_elemento ){
-    printf(" %d", pt->proximo_elemento->elemento );
-    pt = pt->proximo_elemento;
-    if( pt->proximo_elemento )
-      printf(",");
-  }
-  printf(" }\n");
+	if( !c ) return;
+	struct lista_encadeada* pt = c->lista;
+	printf("{");
+	while( pt->proximo_elemento ){
+		printf(" %d", pt->proximo_elemento->elemento );
+		pt = pt->proximo_elemento;
+		if( pt->proximo_elemento )
+			printf(",");
+	}
+	printf(" }\n");
 }
 
 /*Funcao auxiliar que imprime dados sobre bloco de memória não liberado
-  Não Modifique esta função*/
+Não Modifique esta função*/
 void bprint(char *who, int where, void *ptr) {
-  printf("Arquivo: %s, linha: %d\n",who,where); 
+	printf("Arquivo: %s, linha: %d\n",who,where); 
 }

@@ -6,8 +6,8 @@ IMPLEMENTE SUAS FUNÇÕES AQUI
 
 struct conjunto* criar_conjunto(void)
 {
-  struct conjunto * novo = (struct conjunto *) malloc(sizeof(struct conjunto)); /* aloca memória do struct */
-  novo->lista = (struct lista_encadeada *) malloc(sizeof(struct lista_encadeada)); /* aloca memória do nó cabeça */
+  struct conjunto * novo = (struct conjunto *) MALLOC(sizeof(struct conjunto)); /* aloca memória do struct */
+  novo->lista = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada)); /* aloca memória do nó cabeça */
   novo->lista->elemento = -1; /* valor sentinela no nó cabeça */
   novo->lista->proximo_elemento = NULL; /* nó cabeça é o último da lista */
   return novo;
@@ -19,10 +19,10 @@ void deletar_conjunto( struct conjunto * conj)
   while (conj->lista != NULL) 
     {
       temp = conj->lista->proximo_elemento; /* guarda referência pro próximo nó */
-      free(conj->lista); /* libera nó atual */
+      FREE(conj->lista); /* libera nó atual */
       conj->lista = temp; /* avança para o próximo nó */
     }
-  free (conj); /* libera memória do struct do conjunto */
+  FREE (conj); /* libera memória do struct do conjunto */
 }
 
 /* /\* função auxiliar *\/ */
@@ -45,7 +45,7 @@ void inserir_elemento(struct conjunto* conj, int e)
     percorre = percorre->proximo_elemento;
   if (percorre->elemento == e) /* se já existe o elemento no conjunto, sai */
     return;
-  temp = (struct lista_encadeada *) malloc(sizeof(struct lista_encadeada)); /* aloca memória para o próximo nó */
+  temp = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada)); /* aloca memória para o próximo nó */
   temp->proximo_elemento = percorre->proximo_elemento; /* ponteiro do novo nó aponta para o próximo */
   temp->elemento = e; /* armazena o valor do nó */
   percorre->proximo_elemento = temp; /* ponteiro do nó anterior aponta para o novo */
@@ -61,7 +61,7 @@ void remover_elemento (struct conjunto * conj, int e)
     return;
   temp = percorre->proximo_elemento; /* armazena referência temporária ao nó a ser removido */
   percorre->proximo_elemento = temp->proximo_elemento; /* nó anterior aponta para o próximo nó */
-  free(temp); /* remove o nó */
+  FREE(temp); /* remove o nó */
 }
 
 int pertinencia (struct conjunto* conj, int e)
@@ -100,6 +100,7 @@ struct conjunto * diferenca ( struct conjunto * c1, struct conjunto* c2)
 struct conjunto * intersecao(struct conjunto* c1, struct conjunto* c2)
 {
   /* usando propriedades de conjuntos */
+  /* A∩B = A∪B - [(B-A)∪(A-B)] */
   struct conjunto * temp1, *temp2;
   temp1 = diferenca(c1, c2);
   temp2 = diferenca(c2, c1);
@@ -155,9 +156,8 @@ int main(){
   int c1, c2, c3;
   char op;
   for( i = 0; i < 10; ++i ) 
-    C[i] = criar_conjunto(); /* cria os 10 conjuntos vazios 
-				ou: 
-				C[i] = NULL */
+    C[i] = criar_conjunto(); /* cria os 10 conjuntos vazios */
+			
   while( 1 ){
     scanf("%c", &op);
     switch( op ){
@@ -207,13 +207,8 @@ int main(){
     case '=':
       scanf("%d %d", &c1, &c2);
       printf(igualdade(C[c1-1],C[c2-1]) ? "S\n" : "N\n");
-				
-      break;
-    case '\\': /* corresponde ao caracter '\' */
-				
       break;
     case '#':
-				
       scanf("%d", &c1 );
       printf("%d\n", cardinalidade( C[c1-1] ) );
       break;
