@@ -25,22 +25,20 @@ void deletar_conjunto( struct conjunto * conj)
   FREE (conj); /* libera memória do struct do conjunto */
 }
 
-/* /\* função auxiliar *\/ */
-struct conjunto * copia_conjunto(struct conjunto * conj)
+/*  função auxiliar para cópia de pedaços de listas encadeadas */
+struct lista_encadeada * copia_lista(struct lista_encadeada * lista)
 {
-  struct conjunto * novo = criar_conjunto();
-  struct lista_encadeada * percorre = conj->lista->proximo_elemento;
-  while (percorre != NULL)
-    {
-      inserir_elemento(novo, percorre->elemento);
-      percorre = percorre->proximo_elemento;
-    }
-  return novo;
+  if (lista == NULL)
+    return NULL;
+  struct lista_encadeada * copia = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada));
+  copia->proximo_elemento = copia_lista(lista->proximo_elemento);
+  copia->elemento = lista->elemento;
+  return copia;
 }
 
 void inserir_elemento(struct conjunto* conj, int e)
 {
-  struct lista_encadeada * percorre = conj->lista, *temp;
+  struct lista_encadeada * percorre = conj->lista, *temp; 
   while(percorre->proximo_elemento != NULL && percorre->proximo_elemento->elemento <= e) /* encontra a posição do elemento da lista */
     percorre = percorre->proximo_elemento;
   if (percorre->elemento == e) /* se já existe o elemento no conjunto, sai */
@@ -78,41 +76,84 @@ int pertinencia (struct conjunto* conj, int e)
 
 struct conjunto * uniao ( struct conjunto * c1, struct conjunto* c2)
 {
- 
-  struct conjunto * temp = copia_conjunto(c1); /* copia o conjunto c1 */
-  struct lista_encadeada * percorre; 
-  /* percorre c2, adicionando os elementos. A função inserir_elemento previne repetições */
-  for (percorre = c2->lista->proximo_elemento; percorre != NULL; percorre = percorre->proximo_elemento)
-    inserir_elemento(temp, percorre->elemento);
-  return temp; /* retorna resultado */
+  struct conjunto * novo = criar_conjunto(); /* copia o conjunto c1 */
+  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento, *percorre2 = c2->lista->proximo_elemento, * temp= novo->lista; 
+
+  while (percorre1 != NULL && percorre2 != NULL)
+    {
+      /* aloca memória e avança para o próximo elemento */
+      temp->proximo_elemento = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada));
+      temp = temp->proximo_elemento;
+      /* insere na ordem na ordem */
+      if (percorre1->elemento <= percorre2->elemento)
+	{
+	  temp->elemento = percorre1->elemento;
+	  percorre1 = percorre1->proximo_elemento;
+	  /* se o elemento não está na intersecção, reinicia o loop */
+	  if (temp->elemento != percorre2->elemento)
+	    continue;
+	}
+      /* insere os elementos restantes */
+      temp->elemento = percorre2->elemento;
+      percorre2 = percorre2->proximo_elemento;
+    }
+  /* termina de copiar os elementos que sobraram de algum conjunto */
+  temp->proximo_elemento = copia_lista(percorre1 ? percorre1 : percorre2);
+  return novo;
 }
 
 struct conjunto * diferenca ( struct conjunto * c1, struct conjunto* c2)
 {
-  struct conjunto * temp = copia_conjunto(c1); /* copia c1 */
-  struct lista_encadeada * percorre;
-  /* percorre c2, removendo os elementos de c1. A função remover_elemento ignora os que não existem em c1 */
-  for (percorre = c2->lista->proximo_elemento; percorre != NULL; percorre = percorre->proximo_elemento)
-    remover_elemento(temp, percorre->elemento);
-  return temp;
+  struct conjunto * novo = criar_conjunto(); /* copia c1 */
+  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento,* percorre2 = c2->lista->proximo_elemento, *temp = novo->lista;
+  /* enquanto houver elementos a serem comparados em ambas as listas */
+  while ( percorre1 != NULL && percorre2 != NULL)
+    {
+      /* caso o elemento pertença ao conjunto diferença */
+      if (percorre1->elemento < percorre2->elemento)
+	{
+	  /* aloque memória, avançe os ponteiros e reinicie o loop */
+	  temp = temp->proximo_elemento = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada));
+	  temp->elemento = percorre1->elemento;
+	  percorre1 = percorre1->proximo_elemento;
+	  continue;
+	}
+      /* se não pertencer ou a lista da diferença estiver atrasada, avance as listas corretas */
+      if (percorre1->elemento == percorre2->elemento)
+	percorre1 = percorre1->proximo_elemento;
+      percorre2 = percorre2->proximo_elemento;
+    }
+  /* termina de copiar os elementos para a diferença */
+  temp->proximo_elemento = copia_lista(percorre1);
+  return novo;
 }
 
 struct conjunto * intersecao(struct conjunto* c1, struct conjunto* c2)
 {
-  /* usando propriedades de conjuntos */
-  /* A∩B = A∪B - [(B-A)∪(A-B)] */
-  struct conjunto * temp1, *temp2;
-  temp1 = diferenca(c1, c2);
-  temp2 = diferenca(c2, c1);
-  c1 = uniao(c1, c2);
-  c2 = uniao(temp1, temp2);
-  deletar_conjunto(temp1);
-  deletar_conjunto(temp2);
-  temp1 = diferenca(c1, c2);
-  deletar_conjunto(c1);
-  deletar_conjunto(c2);
-  return temp1;
+  struct conjunto * novo = criar_conjunto();
+  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento, * percorre2 = c2->lista->proximo_elemento, *temp = novo->lista;
+  /* enquanto houver elementos a serem comparados em ambas as listas */
+  while (percorre1 != NULL && percorre2 != NULL)
+    {
+      /* se forem diferentes, avançe a lista correspondente */
+      if (percorre1->elemento < percorre2->elemento)
+	percorre1 = percorre1->proximo_elemento;
+      else if (percorre1->elemento > percorre2->elemento)
+	percorre2 = percorre2->proximo_elemento;
+      /* caso contrário, copie o elemento e avance ambas as listas */
+      else
+	{
+	  temp = temp->proximo_elemento = (struct lista_encadeada *) MALLOC(sizeof(struct lista_encadeada));
+	  temp->elemento = percorre1->elemento;
+	  percorre1 = percorre1->proximo_elemento;
+	  percorre2 = percorre2->proximo_elemento;
+	}
+    }
+  /* terminação da lista */
+  temp->proximo_elemento = NULL;
+  return novo;
 }
+
 
 int cardinalidade(struct conjunto * conj)
 {
@@ -126,9 +167,7 @@ int cardinalidade(struct conjunto * conj)
 
 int igualdade(struct conjunto * c1, struct conjunto * c2)
 {
-  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento, 
-    * percorre2 = c2->lista->proximo_elemento;
-
+  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento, * percorre2 = c2->lista->proximo_elemento;
   while( percorre1 != NULL || percorre2 != NULL)   /* enquanto um dos conjuntos não estiver percorrido */
     {
       if (percorre1 == NULL || percorre2 == NULL) /* se apenas um tiver sido percorrido, não são iguais */
@@ -143,11 +182,16 @@ int igualdade(struct conjunto * c1, struct conjunto * c2)
 
 int subconjunto (struct conjunto * c1, struct conjunto * c2)
 {
-  /* usando propriedades de conjuntos */
-  struct conjunto * temp = diferenca(c1, c2); 
-  int card = cardinalidade(temp);
-  deletar_conjunto(temp);
-  return !card;
+  struct lista_encadeada * percorre1 = c1->lista->proximo_elemento,* percorre2 = c2->lista->proximo_elemento;
+  /* enquanto houver elementos a serem comparados em ambas as listas */
+  while ( percorre1 != NULL && percorre2 != NULL)
+    {
+      /* Caso o elemento pertença ao outro conjunto */
+      if (percorre1->elemento == percorre2->elemento)
+	percorre1 = percorre1->proximo_elemento;
+      percorre2 = percorre2->proximo_elemento;
+    }
+  return percorre1 == NULL;
 }
 
 int main(){
