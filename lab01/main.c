@@ -38,7 +38,6 @@ struct conjunto * copia_conjunto(struct conjunto * conj)
   return novo;
 }
 
-
 void inserir_elemento(struct conjunto* conj, int e)
 {
   struct lista_encadeada * percorre = conj->lista, *temp;
@@ -94,7 +93,7 @@ struct conjunto * diferenca ( struct conjunto * c1, struct conjunto* c2)
   struct lista_encadeada * percorre;
   /* percorre c2, removendo os elementos de c1. A função remover_elemento ignora os que não existem em c1 */
   for (percorre = c2->lista->proximo_elemento; percorre != NULL; percorre = percorre->proximo_elemento)
-    remover_elemento(c1, percorre->elemento);
+    remover_elemento(temp, percorre->elemento);
   return temp;
 }
 
@@ -111,7 +110,7 @@ struct conjunto * intersecao(struct conjunto* c1, struct conjunto* c2)
   temp1 = diferenca(c1, c2);
   deletar_conjunto(c1);
   deletar_conjunto(c2);
-  return temp2;
+  return temp1;
 }
 
 int cardinalidade(struct conjunto * conj)
@@ -133,7 +132,7 @@ int igualdade(struct conjunto * c1, struct conjunto * c2)
     {
       if (percorre1 == NULL || percorre2 == NULL) /* se apenas um tiver sido percorrido, não são iguais */
 	return 0;
-      if (percorre1->elemento || percorre2->elemento) /* se os elementos forem diferentes, não são iguais */
+      if (percorre1->elemento != percorre2->elemento) /* se os elementos forem diferentes, não são iguais */
 	return 0;
       percorre1 = percorre1->proximo_elemento; /* avança o elemento */
       percorre2 = percorre2->proximo_elemento;
@@ -151,48 +150,63 @@ int subconjunto (struct conjunto * c1, struct conjunto * c2)
 }
 
 int main(){
-  struct conjunto* C[10];
+  struct conjunto* C[10], *temp;
   int i;
-  int c1;
+  int c1, c2, c3;
   char op;
   for( i = 0; i < 10; ++i ) 
     C[i] = criar_conjunto(); /* cria os 10 conjuntos vazios 
 				ou: 
 				C[i] = NULL */
-	
-
-	
   while( 1 ){
     scanf("%c", &op);
     switch( op ){
     case 'A':
-				
+      scanf("%d %d", &c1, &c2);
+      inserir_elemento(C[c1-1],c2);
       break;
     case 'R':
-				
+      scanf("%d %d", &c1, &c2);
+      remover_elemento(C[c1-1],c2);
       break;
     case 'L':
-				
+      scanf("%d",&c1);
+      listar_elementos(C[c1-1]);
       break;
     case 'F':
-				
+      scanf("%d",&c1);
+      deletar_conjunto(C[c1-1]);
+      C[c1-1] = criar_conjunto();
       break;
     case 'I':
-				
+      scanf("%d %d %d", &c1, &c2, &c3);
+      temp = C[c3-1];
+      C[c3-1] = intersecao(C[c1-1],C[c2-1]);
+      deletar_conjunto(temp);
       break;
     case 'U':
-				
+      scanf("%d %d %d", &c1, &c2, &c3);
+      temp = C[c3-1];
+      C[c3-1] = uniao(C[c1-1],C[c2-1]);
+      deletar_conjunto(temp);
       break;
     case 'P':
-				
+      scanf("%d %d", &c1, &c2);
+      printf(pertinencia(C[c1-1],c2) ? "S\n" : "N\n");
       break;
     case 'D':
-				
+      scanf("%d %d %d", &c1, &c2, &c3);
+      temp = C[c3-1];
+      C[c3-1] = diferenca(C[c1-1],C[c2-1]);
+      deletar_conjunto(temp);
       break;
     case 'C':
-				
+      scanf("%d %d", &c1, &c2);
+      printf(subconjunto(C[c1-1],C[c2-1]) ? "S\n" : "N\n");
       break;
     case '=':
+      scanf("%d %d", &c1, &c2);
+      printf(igualdade(C[c1-1],C[c2-1]) ? "S\n" : "N\n");
 				
       break;
     case '\\': /* corresponde ao caracter '\' */
@@ -201,11 +215,12 @@ int main(){
     case '#':
 				
       scanf("%d", &c1 );
-      printf("%d\n", cardinalidade( C[c1-1]) );
+      printf("%d\n", cardinalidade( C[c1-1] ) );
       break;
     case 'X': 
-				
-      bapply(bprint); //não modifique esta linha
+      for (i = 0; i < 10; i++)
+	deletar_conjunto(C[i]);
+      bapply(bprint); /* não modifique esta linha */
       return 0;
     }
   }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for f in {0..6}
+for f in {0..4}
     do
     echo "Teste $f:"
-    colordiff -s -q -y <(valgrind --leak-check=full -q bin/lab12 < testes/arq0$f.in) testes/arq0$f.res
+    colordiff -s -q -y <(valgrind --leak-check=full -q bin/lab01 < testes/arq0$f.in) testes/arq0$f.res
     done      

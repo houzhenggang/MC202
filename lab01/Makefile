@@ -1,9 +1,9 @@
 objdir = bin
 objs = $(addprefix $(objdir)/,main.o balloc.o)
-CFLAGS = -O0 -ggdb -Wall -Werror -ansi -pedantic
+CFLAGS = -O0 -ggdb -Wall # -Werror -ansi -pedantic
 
-lab12: $(objs)
-	$(CC) -o $(objdir)/lab12 $(objs)
+lab01: $(objs)
+	$(CC) -o $(objdir)/lab01 $(objs)
 
 bin/%.o : %.c
 	$(CC) -c $(CFLAGS) $< -o $@
