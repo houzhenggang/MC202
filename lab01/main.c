@@ -1,8 +1,14 @@
-#include "main.h"
+/*******************************************************************************
+Pedro Emílio Machado de Brito - RA 137264
+20/08/2012 - MC202 turma B
 
-/*
-IMPLEMENTE SUAS FUNÇÕES AQUI
-*/
+lab01 - Conjuntos com listas ligadas e TADs
+
+O programa a seguir implementa armazenamento e algumas operações de conjuntos
+usando listas ligadas, e usando tipos abstratos de dados.
+*******************************************************************************/
+
+#include "main.h"
 
 struct conjunto* criar_conjunto(void)
 {
