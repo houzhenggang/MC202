@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for f in testes/*.in
+    do
+    echo "Teste $f:"
+    colordiff -sy <(valgrind --leak-check=full -q bin/lab* < $f) ${f%.in}.res
+    done      
