@@ -2,8 +2,8 @@
 #include <stdio.h>
 /* Utilize as macros MALLOC e FREE para alocar e desalocar memória */
 
-#define malloc MALLOC
-#define free FREE
+/* #define malloc MALLOC */
+/* #define free FREE */
 
 typedef struct 
 {
@@ -43,8 +43,7 @@ fila * inicia (void)
   return novo;
 }
 
-
-void insere( fila * f, Aeronave a)
+void insere(fila * f, Aeronave a)
 {
   struct Fila_elemento * novo = (struct Fila_elemento *) malloc(sizeof(struct Fila_elemento));
   novo->aviao = a;
@@ -61,7 +60,7 @@ void insere( fila * f, Aeronave a)
 
 Aeronave pega (fila * f)
 {
-  Aeronave erro = {-1, -1};
+  Aeronave erro = {-1, -1, 'E'};
   if (f->tamanho == 0)
      return erro;
   return f->final->prox->aviao;
@@ -74,13 +73,14 @@ int retira (fila * f)
     return -1;
   temp = f->final->prox;
   f->final->prox = temp->prox;
+  f->tamanho--;
   free(temp);
   return 0;
 }
 
 void libera(fila * f)
 {
-  while (!retira(f))
+  while (!retira(f));
   free (f);
 }
 
@@ -91,13 +91,14 @@ int tamanho(fila * f)
 
 
 int main(){
-  fila  * decolagem, * aterrisagem, *store;
+  fila  * decolagem, * aterrisagem, *store, *duaspistas;
   char leitura = 0;
   Aeronave entrada  = {1, 0};
   float so;
   decolagem = inicia();
   aterrisagem = inicia();
   store = inicia();
+  duaspistas = inicia();
   int pistaParada = 0, esperaDecolagem = 0, esperaAterrisagem = 0;
   do 
     {
@@ -117,13 +118,15 @@ int main(){
 	  break;
 	}
     } while (leitura != 'F');
-  entrada.id = 0;
-  entrada.tempoestampa = 0;
+  entrada.tipo = 'F';
   insere(store, entrada);
+  entrada.tempoestampa = 0;
   
   /* store já tem nossa fila de aviões com os respectivos tempos */
-  while (pega(store).id != 0)
+  printf ("Aeroporto com uma pista\n\n");
+  while (tamanho(store) || tamanho(decolagem) || tamanho(aterrisagem))
     {
+      printf("Tempo %d\n",entrada.tempoestampa);
       while ( pega(store).tempoestampa == entrada.tempoestampa) 
 	{
 	    if (pega(store).tipo == 'A')
@@ -136,7 +139,7 @@ int main(){
 		else
 		  printf ("%d impedido de aterrisar\n", pega(store).id);
 	      }
-	    else
+	    else if (pega(store).tipo == 'D')
 	      {
 		if (tamanho(decolagem) < 5)
 		  {
@@ -146,7 +149,7 @@ int main(){
 	      else
 		printf ("%d impedido de decolar\n", pega(store).id);
 	      }
-	    insere(store, entrada = pega(store));
+	    insere(duaspistas, entrada = pega(store));
 	    retira(store);
 	}
       if (tamanho(aterrisagem) == 0)
@@ -165,14 +168,16 @@ int main(){
 	}
       else
 	{
-	  printf ("%d aterrisa\n",pega(decolagem).id);
+	  printf ("%d aterrisa\n",pega(aterrisagem).id);
 	  esperaAterrisagem += pega(aterrisagem).tempoestampa - entrada.tempoestampa;
 	  retira(aterrisagem);
 	}
       entrada.tempoestampa++;
     }
-    /* caso de uma pista só */
-	
+  libera(store);
+  libera(decolagem);
+  libera(aterrisagem);
+  libera(duaspistas);
   bapply(bprint); //não modifique esta linha
   return 0;
 }
