@@ -177,15 +177,12 @@ void aeroporto (fila * entrada, fila * saida, int pistas)
 }
 
 int main(){
-  fila  * decolagem, * aterrissagem, *trafego, *temp;
+  fila *trafego, *temp;
   char leitura = 0;
   Aeronave entrada  = {1, 0};
   /* inicia as 4 filas que serão usadas */
-  decolagem = inicia();
-  aterrissagem = inicia();
   trafego = inicia();
   temp = inicia();
-  int pistaParada = 0, esperaDecolagem = 0, esperaAterrissagem = 0, decolagens = 0, aterrissagens = 0, impedidos = 0;
   /* loop lê a entrada e gera elementos iniciais da fila */
   do 
     {
@@ -207,89 +204,15 @@ int main(){
     } while (leitura != 'F');
   /*a partir de agora entrada.tempoestampa guarda o tempo atual*/
   entrada.tempoestampa = 0;
-  
   /* trafego já tem nossa fila de aviões com os respectivos tempos */
   printf ("Aeroporto com uma pista\n\n");
   aeroporto (trafego, temp, 1);
-  /* while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem)) */
-  /*   { */
-  /*     printf("Tempo %d\n",entrada.tempoestampa); */
-  /*     impedidos += enfileira (aterrissagem, decolagem, trafego, entrada.tempoestampa, temp); */
-  /*     if (tamanho(aterrissagem) == 0) */
-  /* 	{ */
-  /* 	  if (tamanho(decolagem) == 0) */
-  /* 	    { */
-  /* 	      printf ("Pista parada\n"); */
-  /* 	      pistaParada++; */
-  /* 	    } */
-  /* 	  else */
-  /* 	    { */
-  /* 	      printf ("%d decola\n",pega(decolagem).id); */
-  /* 	      decolagens++; */
-  /* 	      esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa; */
-  /* 	      retira(decolagem); */
-  /* 	    } */
-  /* 	} */
-  /*     else */
-  /* 	{ */
-  /* 	  printf ("%d aterrissa\n",pega(aterrissagem).id); */
-  /* 	  aterrissagens++; */
-  /* 	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa; */
-  /* 	  retira(aterrissagem); */
-  /* 	} */
-  /*     entrada.tempoestampa++; */
-  /*   } */
-  /* printf ("\nnumero de decolagens = %d\n", decolagens); */
-  /* printf ("numero de aterrissagens = %d\n", aterrissagens); */
-  /* printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos); */
-  /* printf ("tempo de pista parada = %d\n", pistaParada); */
-  /* printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens); */
-  /* printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens); */
   libera(trafego);
   trafego = temp;
-  decolagens = aterrissagens = impedidos = pistaParada = esperaAterrissagem = esperaDecolagem = entrada.tempoestampa = 0;
   /* duas pistas */
   printf ("\nAeroporto com duas pistas\n\n");
   aeroporto (trafego, NULL, 2);
-  /* while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem)) */
-  /*   { */
-  /*     printf("Tempo %d\n",entrada.tempoestampa); */
-  /*     impedidos += enfileira (aterrissagem, decolagem, trafego, entrada.tempoestampa, NULL); */
-  /*     if(tamanho(aterrissagem)) */
-  /* 	{ */
-  /* 	  printf ("%d aterrissa\n",pega(aterrissagem).id); */
-  /* 	  aterrissagens++; */
-  /* 	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa; */
-  /* 	  retira(aterrissagem); */
-  /* 	} */
-  /*     else */
-  /* 	{ */
-  /* 	  printf ("Pista de aterrissagem parada\n"); */
-  /* 	  pistaParada++; */
-  /* 	} */
-  /*     if(tamanho(decolagem)) */
-  /* 	{ */
-  /* 	  printf ("%d decola\n",pega(decolagem).id); */
-  /* 	  decolagens++; */
-  /* 	  esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa; */
-  /* 	  retira(decolagem); */
-  /* 	} */
-  /*     else */
-  /* 	{ */
-  /* 	  printf ("Pista de decolagem parada\n"); */
-  /* 	  pistaParada++; */
-  /* 	} */
-  /*     entrada.tempoestampa++; */
-  /*   } */
-  /* printf ("\nnumero de decolagens = %d\n", decolagens); */
-  /* printf ("numero de aterrissagens = %d\n", aterrissagens); */
-  /* printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos); */
-  /* printf ("tempo de pista parada = %d\n", pistaParada); */
-  /* printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens); */
-  /* printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens); */
   libera(trafego);
-  libera(decolagem);
-  libera(aterrissagem);
   bapply(bprint); /* não modifique esta linha */
   return 0;
 }
