@@ -2,9 +2,8 @@
 #include <stdio.h>
 /* Utilize as macros MALLOC e FREE para alocar e desalocar memória */
 
-/* #define malloc MALLOC */
-/* #define free FREE */
-#define DUASPISTAS
+#define malloc MALLOC 
+#define free FREE
 
 typedef struct 
 {
@@ -124,10 +123,10 @@ int main(){
   
   /* trafego já tem nossa fila de aviões com os respectivos tempos */
   printf ("Aeroporto com uma pista\n\n");
-  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
+  while ((tamanho(trafego) && pega(trafego).tipo != 'F') || tamanho(decolagem) || tamanho(aterrissagem))
     {
       printf("Tempo %d\n",entrada.tempoestampa);
-      while ( pega(trafego).tempoestampa == entrada.tempoestampa) 
+      while ( pega(trafego).tempoestampa == entrada.tempoestampa && pega(trafego).tipo != 'F') 
 	{
 	    if (pega(trafego).tipo == 'A')
 	      {
@@ -192,12 +191,11 @@ int main(){
   trafego = temp;
   decolagens = aterrissagens = impedidos = pistaParada = esperaAterrissagem = esperaDecolagem = entrada.tempoestampa = 0;
   /* duas pistas */
-  #ifdef DUASPISTAS
   printf ("\nAeroporto com duas pistas\n\n");
-  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
+  while ((tamanho(trafego) && pega(trafego).tipo != 'F') || tamanho(decolagem) || tamanho(aterrissagem))
     {
       printf("Tempo %d\n",entrada.tempoestampa);
-      while ( pega(trafego).tempoestampa == entrada.tempoestampa) 
+      while ( pega(trafego).tempoestampa == entrada.tempoestampa && pega(trafego).tipo != 'F') 
 	{
 	    if (pega(trafego).tipo == 'A')
 	      {
@@ -260,7 +258,6 @@ int main(){
   printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens);
   printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens);
   libera(trafego);
-#endif
   libera(decolagem);
   libera(aterrissagem);
   bapply(bprint); //não modifique esta linha
