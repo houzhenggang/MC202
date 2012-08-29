@@ -105,6 +105,8 @@ void aeroporto (char * entrada, int pistas)
 	  if (*entrada == 'T')
 	    {
 	      entrada++;
+	      while (*entrada == ' ')
+		entrada++;
 	      break;
 	    }
 	  temp.id++;
@@ -135,6 +137,8 @@ void aeroporto (char * entrada, int pistas)
 		}
 	    }
 	}
+      if (entrada == '\0' && !(tamanho(decolagem) || tamanho(aterrissagem)))
+	  break;
       if (tamanho(aterrissagem))
 	{
 	  printf ("%d aterrissa\n",pega(aterrissagem).id);
