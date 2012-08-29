@@ -89,6 +89,93 @@ int tamanho(fila * f)
   return f->tamanho;
 }
 
+/* função de separagem em duas filas */
+
+int enfileira(fila * aterrissagem, fila * decolagem, fila * entrada, int tempo, fila * saida)
+{
+  int impedidos = 0;
+  while (tamanho(entrada) && pega(entrada).tempoestampa == tempo) 
+    {
+      if (pega(entrada).tipo == 'A')
+	{
+	  if (tamanho(aterrissagem) < 5)
+	    {
+	      printf ("%d entra na fila de aterrissagem\n", pega(entrada).id);
+	      insere(aterrissagem, pega(entrada));
+	    }
+	  else
+	    {
+	      printf ("%d impedido de aterrissar\n", pega(entrada).id);
+	      impedidos++;
+	    }
+	}
+      else if (pega(entrada).tipo == 'D')
+	{
+	  if (tamanho(decolagem) < 5)
+	    {
+	      printf ("%d entra na fila de decolagem\n", pega(entrada).id);
+	      insere(decolagem, pega(entrada));
+	    }
+	  else
+	    {
+	      printf ("%d impedido de decolar\n", pega(entrada).id);
+	      impedidos++;
+	    }
+	}
+      if (saida != NULL)
+	insere(saida, pega(entrada));
+      retira(entrada);
+    }
+  return impedidos;
+}
+
+/* função que gerencia o aeroporto */
+
+void aeroporto (fila * entrada, fila * saida, int pistas)
+{
+  fila * decolagem = inicia(), * aterrissagem = inicia();
+  int tempo = 0, decolagens = 0, aterrissagens = 0, impedidos = 0, pistaParada = 0, esperaAterrissagem = 0, esperaDecolagem = 0;
+  for (; tamanho(entrada) || tamanho(decolagem) || tamanho(aterrissagem); tempo++)
+    {
+      printf("Tempo %d\n",tempo);
+      impedidos += enfileira (aterrissagem, decolagem, entrada, tempo, saida);
+      if (tamanho(aterrissagem))
+	{
+	  printf ("%d aterrissa\n",pega(aterrissagem).id);
+	  aterrissagens++;
+	  esperaAterrissagem += tempo - pega(aterrissagem).tempoestampa;
+	  retira(aterrissagem);
+	  if (pistas == 1)
+	    continue;
+	}
+      else if (pistas == 2)
+	{
+	  printf ("Pista de aterrissagem parada\n");
+	  pistaParada++;
+	}
+      if (tamanho(decolagem))
+	{
+	  printf ("%d decola\n",pega(decolagem).id);
+	  decolagens++;
+	  esperaDecolagem +=  tempo - pega(decolagem).tempoestampa;
+	  retira(decolagem);
+	}
+      else
+	{
+	  printf ("Pista %sparada\n", pistas == 2 ? "de decolagem ": "");
+	  pistaParada++;
+	}
+    }
+  printf ("\nnumero de decolagens = %d\n", decolagens);
+  printf ("numero de aterrissagens = %d\n", aterrissagens);
+  printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos);
+  printf ("tempo de pista parada = %d\n", pistaParada);
+  printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens);
+  printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens);
+  libera(decolagem);
+  libera(aterrissagem);
+}
+
 int main(){
   fila  * decolagem, * aterrissagem, *trafego, *temp;
   char leitura = 0;
@@ -123,140 +210,83 @@ int main(){
   
   /* trafego já tem nossa fila de aviões com os respectivos tempos */
   printf ("Aeroporto com uma pista\n\n");
-  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
-    {
-      printf("Tempo %d\n",entrada.tempoestampa);
-      while (tamanho(trafego) && pega(trafego).tempoestampa == entrada.tempoestampa) 
-	{
-	    if (pega(trafego).tipo == 'A')
-	      {
-		if (tamanho(aterrissagem) < 5)
-		  {
-		    printf ("%d entra na fila de aterrissagem\n", pega(trafego).id);
-		    insere(aterrissagem, pega(trafego));
-		  }
-		else
-		  {
-		    printf ("%d impedido de aterrissar\n", pega(trafego).id);
-		    impedidos++;
-		  }
-	      }
-	    else if (pega(trafego).tipo == 'D')
-	      {
-		if (tamanho(decolagem) < 5)
-		  {
-		    printf ("%d entra na fila de decolagem\n", pega(trafego).id);
-		    insere(decolagem, pega(trafego));
-		  }
-		else
-		  {
-		    printf ("%d impedido de decolar\n", pega(trafego).id);
-		    impedidos++;
-		  }
-	      }
-	    insere(temp, pega(trafego));
-	    retira(trafego);
-	}
-      if (tamanho(aterrissagem) == 0)
-	{
-	  if (tamanho(decolagem) == 0)
-	    {
-	      printf ("Pista parada\n");
-	      pistaParada++;
-	    }
-	  else
-	    {
-	      printf ("%d decola\n",pega(decolagem).id);
-	      decolagens++;
-	      esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa;
-	      retira(decolagem);
-	    }
-	}
-      else
-	{
-	  printf ("%d aterrissa\n",pega(aterrissagem).id);
-	  aterrissagens++;
-	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa;
-	  retira(aterrissagem);
-	}
-      entrada.tempoestampa++;
-    }
-  printf ("\nnumero de decolagens = %d\n", decolagens);
-  printf ("numero de aterrissagens = %d\n", aterrissagens);
-  printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos);
-  printf ("tempo de pista parada = %d\n", pistaParada);
-  printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens);
-  printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens);
+  aeroporto (trafego, temp, 1);
+  /* while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem)) */
+  /*   { */
+  /*     printf("Tempo %d\n",entrada.tempoestampa); */
+  /*     impedidos += enfileira (aterrissagem, decolagem, trafego, entrada.tempoestampa, temp); */
+  /*     if (tamanho(aterrissagem) == 0) */
+  /* 	{ */
+  /* 	  if (tamanho(decolagem) == 0) */
+  /* 	    { */
+  /* 	      printf ("Pista parada\n"); */
+  /* 	      pistaParada++; */
+  /* 	    } */
+  /* 	  else */
+  /* 	    { */
+  /* 	      printf ("%d decola\n",pega(decolagem).id); */
+  /* 	      decolagens++; */
+  /* 	      esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa; */
+  /* 	      retira(decolagem); */
+  /* 	    } */
+  /* 	} */
+  /*     else */
+  /* 	{ */
+  /* 	  printf ("%d aterrissa\n",pega(aterrissagem).id); */
+  /* 	  aterrissagens++; */
+  /* 	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa; */
+  /* 	  retira(aterrissagem); */
+  /* 	} */
+  /*     entrada.tempoestampa++; */
+  /*   } */
+  /* printf ("\nnumero de decolagens = %d\n", decolagens); */
+  /* printf ("numero de aterrissagens = %d\n", aterrissagens); */
+  /* printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos); */
+  /* printf ("tempo de pista parada = %d\n", pistaParada); */
+  /* printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens); */
+  /* printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens); */
   libera(trafego);
   trafego = temp;
   decolagens = aterrissagens = impedidos = pistaParada = esperaAterrissagem = esperaDecolagem = entrada.tempoestampa = 0;
   /* duas pistas */
   printf ("\nAeroporto com duas pistas\n\n");
-  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
-    {
-      printf("Tempo %d\n",entrada.tempoestampa);
-      while ( tamanho(trafego) && pega(trafego).tempoestampa == entrada.tempoestampa) 
-	{
-	    if (pega(trafego).tipo == 'A')
-	      {
-		if (tamanho(aterrissagem) < 5)
-		  {
-		    printf ("%d entra na fila de aterrissagem\n", pega(trafego).id);
-		    insere(aterrissagem, pega(trafego));
-		  }
-		else
-		  {
-		    printf ("%d impedido de aterrissar\n", pega(trafego).id);
-		    impedidos++;
-		  }
-	      }
-	    else if (pega(trafego).tipo == 'D')
-	      {
-		if (tamanho(decolagem) < 5)
-		  {
-		    printf ("%d entra na fila de decolagem\n", pega(trafego).id);
-		    insere(decolagem, pega(trafego));
-		  }
-		else
-		  {
-		    printf ("%d impedido de decolar\n", pega(trafego).id);
-		    impedidos++;
-		  }
-	      }
-	    retira(trafego);
-	}
-      if(tamanho(aterrissagem))
-	{
-	  printf ("%d aterrissa\n",pega(aterrissagem).id);
-	  aterrissagens++;
-	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa;
-	  retira(aterrissagem);
-	}
-      else
-	{
-	  printf ("Pista de aterrissagem parada\n");
-	  pistaParada++;
-	}
-      if(tamanho(decolagem))
-	{
-	  printf ("%d decola\n",pega(decolagem).id);
-	  decolagens++;
-	  esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa;
-	  retira(decolagem);
-	}
-      else
-	{
-	  printf ("Pista de decolagem parada\n");
-	  pistaParada++;
-	}
-      entrada.tempoestampa++;
-    }
-  printf ("\nnumero de decolagens = %d\n", decolagens);
-  printf ("numero de aterrissagens = %d\n", aterrissagens);
-  printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos);
-  printf ("tempo de pista parada = %d\n", pistaParada);
-  printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens);
-  printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens);
+  aeroporto (trafego, NULL, 2);
+  /* while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem)) */
+  /*   { */
+  /*     printf("Tempo %d\n",entrada.tempoestampa); */
+  /*     impedidos += enfileira (aterrissagem, decolagem, trafego, entrada.tempoestampa, NULL); */
+  /*     if(tamanho(aterrissagem)) */
+  /* 	{ */
+  /* 	  printf ("%d aterrissa\n",pega(aterrissagem).id); */
+  /* 	  aterrissagens++; */
+  /* 	  esperaAterrissagem += entrada.tempoestampa - pega(aterrissagem).tempoestampa; */
+  /* 	  retira(aterrissagem); */
+  /* 	} */
+  /*     else */
+  /* 	{ */
+  /* 	  printf ("Pista de aterrissagem parada\n"); */
+  /* 	  pistaParada++; */
+  /* 	} */
+  /*     if(tamanho(decolagem)) */
+  /* 	{ */
+  /* 	  printf ("%d decola\n",pega(decolagem).id); */
+  /* 	  decolagens++; */
+  /* 	  esperaDecolagem +=  entrada.tempoestampa - pega(decolagem).tempoestampa; */
+  /* 	  retira(decolagem); */
+  /* 	} */
+  /*     else */
+  /* 	{ */
+  /* 	  printf ("Pista de decolagem parada\n"); */
+  /* 	  pistaParada++; */
+  /* 	} */
+  /*     entrada.tempoestampa++; */
+  /*   } */
+  /* printf ("\nnumero de decolagens = %d\n", decolagens); */
+  /* printf ("numero de aterrissagens = %d\n", aterrissagens); */
+  /* printf ("avioes impedidos de usar o aeroporto = %d\n", impedidos); */
+  /* printf ("tempo de pista parada = %d\n", pistaParada); */
+  /* printf ("tempo medio de espera para aterrissar = %.2f\n", esperaAterrissagem/(float)aterrissagens); */
+  /* printf ("tempo medio de espera para decolar = %.2f\n", esperaDecolagem/(float)decolagens); */
   libera(trafego);
   libera(decolagem);
   libera(aterrissagem);
