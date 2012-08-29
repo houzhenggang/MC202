@@ -118,17 +118,15 @@ int main(){
 	  break;
 	}
     } while (leitura != 'F');
-  /* insere marcador de fim de fila */
-  entrada.tipo = 'F';
-  insere(trafego, entrada);
+  /*a partir de agora entrada.tempoestampa guarda o tempo atual*/
   entrada.tempoestampa = 0;
   
   /* trafego já tem nossa fila de aviões com os respectivos tempos */
   printf ("Aeroporto com uma pista\n\n");
-  while ((tamanho(trafego) && pega(trafego).tipo != 'F') || tamanho(decolagem) || tamanho(aterrissagem))
+  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
     {
       printf("Tempo %d\n",entrada.tempoestampa);
-      while ( pega(trafego).tempoestampa == entrada.tempoestampa && pega(trafego).tipo != 'F') 
+      while (tamanho(trafego) && pega(trafego).tempoestampa == entrada.tempoestampa) 
 	{
 	    if (pega(trafego).tipo == 'A')
 	      {
@@ -156,7 +154,7 @@ int main(){
 		    impedidos++;
 		  }
 	      }
-	    insere(temp, entrada = pega(trafego));
+	    insere(temp, pega(trafego));
 	    retira(trafego);
 	}
       if (tamanho(aterrissagem) == 0)
@@ -194,10 +192,10 @@ int main(){
   decolagens = aterrissagens = impedidos = pistaParada = esperaAterrissagem = esperaDecolagem = entrada.tempoestampa = 0;
   /* duas pistas */
   printf ("\nAeroporto com duas pistas\n\n");
-  while ((tamanho(trafego) && pega(trafego).tipo != 'F') || tamanho(decolagem) || tamanho(aterrissagem))
+  while (tamanho(trafego) || tamanho(decolagem) || tamanho(aterrissagem))
     {
       printf("Tempo %d\n",entrada.tempoestampa);
-      while ( pega(trafego).tempoestampa == entrada.tempoestampa && pega(trafego).tipo != 'F') 
+      while ( tamanho(trafego) && pega(trafego).tempoestampa == entrada.tempoestampa) 
 	{
 	    if (pega(trafego).tipo == 'A')
 	      {
