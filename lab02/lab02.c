@@ -2,8 +2,10 @@
 #include <stdio.h>
 /* Utilize as macros MALLOC e FREE para alocar e desalocar memória */
 
+/* defines para utilizar as funções do balloc.h */
 #define malloc MALLOC 
 #define free FREE
+
 
 typedef struct 
 {
@@ -12,30 +14,25 @@ typedef struct
   char tipo;
 } Aeronave;
 
-/* Aeronave listavazia =  */
-/*   { */
-/*     -1; */
-/*     -1; */
-/*   } */
-  
+/*
+Estrutura da fila: Ponteiro aponta para a entrada da fila, que aponta para a saída.
+*/
 
+/* estrutura que guarda cada nó da fila */
 struct Fila_elemento
 {
   Aeronave aviao;
   struct Fila_elemento * prox;
 };
 
+/* estrutura que guarda informação sobre o tamanho atual da fila e seu nó final */
 typedef struct
 {
   int tamanho;
   struct Fila_elemento * final;
 } fila;
 
-
-/*******************************************************************************
-Estrutura da fila: Ponteiro aponta para a entrada da fila, que aponta para a saída.
-*******************************************************************************/
-
+/* inicia uma fila */
 fila * inicia (void)
 {
   fila * novo = malloc(sizeof(fila));
@@ -43,6 +40,7 @@ fila * inicia (void)
   return novo;
 }
 
+/*insere um elemento no fim da fila */
 void insere(fila * f, Aeronave a)
 {
   struct Fila_elemento * novo = (struct Fila_elemento *) malloc(sizeof(struct Fila_elemento));
@@ -57,7 +55,7 @@ void insere(fila * f, Aeronave a)
   f->final = novo;
   f->tamanho++;
 }
-
+/* retorna o elemento na cabeça da fila, SEM RETIRÁ-LO */
 Aeronave pega (fila * f)
 {
   Aeronave erro = {-1, -1, 'E'};
@@ -66,6 +64,7 @@ Aeronave pega (fila * f)
   return f->final->prox->aviao;
 }
 
+/* apaga o elemento na cabeça da fila, retornando 0 em sucesso e -1 em caso de fila vazia */
 int retira (fila * f)
 {
   struct Fila_elemento * temp;
@@ -78,27 +77,29 @@ int retira (fila * f)
   return 0;
 }
 
+/* libera toda a memória alocada para uma fila */
 void libera(fila * f)
 {
   while (!retira(f));
   free (f);
 }
-
+/* retorna no número de elementos atualmente */
 int tamanho(fila * f)
 {
   return f->tamanho;
 }
 
-
 int main(){
   fila  * decolagem, * aterrissagem, *trafego, *temp;
   char leitura = 0;
   Aeronave entrada  = {1, 0};
+  /* inicia as 4 filas que serão usadas */
   decolagem = inicia();
   aterrissagem = inicia();
   trafego = inicia();
   temp = inicia();
   int pistaParada = 0, esperaDecolagem = 0, esperaAterrissagem = 0, decolagens = 0, aterrissagens = 0, impedidos = 0;
+  /* loop lê a entrada e gera elementos iniciais da fila */
   do 
     {
       scanf ("%c", &leitura);
@@ -117,6 +118,7 @@ int main(){
 	  break;
 	}
     } while (leitura != 'F');
+  /* insere marcador de fim de fila */
   entrada.tipo = 'F';
   insere(trafego, entrada);
   entrada.tempoestampa = 0;
@@ -260,6 +262,6 @@ int main(){
   libera(trafego);
   libera(decolagem);
   libera(aterrissagem);
-  bapply(bprint); //não modifique esta linha
+  bapply(bprint); /* não modifique esta linha */
   return 0;
 }
