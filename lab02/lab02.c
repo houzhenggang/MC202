@@ -6,12 +6,10 @@
 #define malloc MALLOC 
 #define free FREE
 
-
 typedef struct 
 {
   int id;
   int tempoestampa;
-  char tipo;
 } Aeronave;
 
 /*
@@ -58,7 +56,7 @@ void insere(fila * f, Aeronave a)
 /* retorna o elemento na cabeça da fila, SEM RETIRÁ-LO */
 Aeronave pega (fila * f)
 {
-  Aeronave erro = {-1, -1, 'E'};
+  Aeronave erro = {-1, -1};
   if (f->tamanho == 0)
      return erro;
   return f->final->prox->aviao;
@@ -89,56 +87,49 @@ int tamanho(fila * f)
   return f->tamanho;
 }
 
-/* função de separagem em duas filas */
-
-int enfileira(fila * aterrissagem, fila * decolagem, fila * entrada, int tempo, fila * saida)
-{
-  int impedidos = 0;
-  while (tamanho(entrada) && pega(entrada).tempoestampa == tempo) 
-    {
-      if (pega(entrada).tipo == 'A')
-	{
-	  if (tamanho(aterrissagem) < 5)
-	    {
-	      printf ("%d entra na fila de aterrissagem\n", pega(entrada).id);
-	      insere(aterrissagem, pega(entrada));
-	    }
-	  else
-	    {
-	      printf ("%d impedido de aterrissar\n", pega(entrada).id);
-	      impedidos++;
-	    }
-	}
-      else if (pega(entrada).tipo == 'D')
-	{
-	  if (tamanho(decolagem) < 5)
-	    {
-	      printf ("%d entra na fila de decolagem\n", pega(entrada).id);
-	      insere(decolagem, pega(entrada));
-	    }
-	  else
-	    {
-	      printf ("%d impedido de decolar\n", pega(entrada).id);
-	      impedidos++;
-	    }
-	}
-      if (saida != NULL)
-	insere(saida, pega(entrada));
-      retira(entrada);
-    }
-  return impedidos;
-}
-
 /* função que gerencia o aeroporto */
 
 void aeroporto (fila * entrada, fila * saida, int pistas)
 {
   fila * decolagem = inicia(), * aterrissagem = inicia();
   int tempo = 0, decolagens = 0, aterrissagens = 0, impedidos = 0, pistaParada = 0, esperaAterrissagem = 0, esperaDecolagem = 0;
+  Aeronave temp;
+  int id = 1;
   for (; tamanho(entrada) || tamanho(decolagem) || tamanho(aterrissagem); tempo++)
     {
       printf("Tempo %d\n",tempo);
-      impedidos += enfileira (aterrissagem, decolagem, entrada, tempo, saida);
+      for (temp = pega(entrada); tamanho(entrada) && pega(entrada).tempoestampa == tempo; retira(entrada)) 
+	{
+	  temp.id = id++;
+	  if (pega(entrada).id)
+	    {
+	      if (tamanho(aterrissagem) < 5)
+		{
+		  printf ("%d entra na fila de aterrissagem\n", temp.id);
+		  insere(aterrissagem, temp);
+		}
+	      else
+		{
+		  printf ("%d impedido de aterrissar\n", temp.id);
+		  impedidos++;
+		}
+	    }
+	  else
+	    {
+	      if (tamanho(decolagem) < 5)
+		{
+		  printf ("%d entra na fila de decolagem\n", temp.id);
+		  insere(decolagem, temp);
+		}
+	      else
+		{
+		  printf ("%d impedido de decolar\n", temp.id);
+		  impedidos++;
+		}
+	    }
+	  if (saida != NULL)
+	    insere(saida, pega(entrada));
+	}
       if (tamanho(aterrissagem))
 	{
 	  printf ("%d aterrissa\n",pega(aterrissagem).id);
@@ -191,9 +182,8 @@ int main(){
 	{
 	case 'A':
 	case 'D':
-	  entrada.tipo = leitura;
-	  insere( trafego, entrada);
-	  entrada.id++;
+	  entrada.id = (leitura == 'A');
+	  insere(trafego, entrada);
 	  break;
 	case 'T':
 	  entrada.tempoestampa++;
@@ -202,8 +192,6 @@ int main(){
 	  break;
 	}
     } while (leitura != 'F');
-  /*a partir de agora entrada.tempoestampa guarda o tempo atual*/
-  entrada.tempoestampa = 0;
   /* trafego já tem nossa fila de aviões com os respectivos tempos */
   printf ("Aeroporto com uma pista\n\n");
   aeroporto (trafego, temp, 1);
