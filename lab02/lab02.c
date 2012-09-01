@@ -2,104 +2,75 @@
 #include <stdio.h>
 /* Utilize as macros MALLOC e FREE para alocar e desalocar memória */
 
-/* defines para utilizar as funções do balloc.h */
-#define malloc MALLOC
-#define free FREE
-
-/* estrutura que define o aeroporto */
-
+/* estrutura que define um avião */
 typedef struct 
 {
   int id;
   int tempoestampa;
 } Aeronave;
 
-/*
-Estrutura da fila: Ponteiro aponta para a entrada da fila, que aponta para a saída.
-*/
-
-/* estrutura que guarda cada nó da fila */
-struct Fila_elemento
-{
-  Aeronave aviao;
-  struct Fila_elemento * prox;
-};
-
-/* estrutura que guarda informação sobre o tamanho atual da fila e seu nó final */
+/* estrutura da fila */
 typedef struct
 {
-  int tamanho;
-  struct Fila_elemento * final;
+  #define MAX 5
+  Aeronave aviao[MAX+1];
+  int entrada;
+  int saida;
 } fila;
 
 /* inicia uma fila */
 fila * inicia (void)
 {
-  fila * novo = malloc(sizeof(fila));
-  novo->tamanho = 0;
+  fila * novo = MALLOC(sizeof(fila));
+  novo->entrada = novo->saida = 0;
   return novo;
 }
 
-/*insere um elemento no fim da fila */
-void insere(fila * f, Aeronave a)
+/*insere um elemento no fim da fila, retorna 0 em sucesso, -1 em falha */
+int insere(fila * f, Aeronave a)
 {
-  struct Fila_elemento * novo = (struct Fila_elemento *) malloc(sizeof(struct Fila_elemento));
-  novo->aviao = a;
-  /* caso de fila vazia */
-  if (f->tamanho == 0)
-      novo->prox = novo;
-  /* caso de fila não vazia */
-  else
-    {
-      novo->prox = f->final->prox;
-      f->final->prox = novo;
-    }
-  /* move o ponteiro e incrementa tamanho */
-  f->final = novo;
-  f->tamanho++;
-}
-/* retorna o elemento na cabeça da fila, SEM RETIRÁ-LO */
-/* NÃO USAR EM FILA VAZIA */
-Aeronave pega (fila * f)
-{
-  return f->final->prox->aviao;
+  if ((f->entrada+1) % (MAX + 1) == f->saida)
+    return -1;
+  f->aviao[f->entrada] = a;
+  f->entrada = (f->entrada + 1) % (MAX + 1);
+  return 0;
 }
 
-/* retorna no número de elementos atualmente */
-int tamanho(fila * f)
+/* retorna se a fila está vazia */
+int vazia (fila * f)
 {
-  return f->tamanho;
+  return f->entrada == f->saida;
+}
+
+/* retorna cópia para o elemento da ponta da fila */
+Aeronave pega (fila * f)
+{
+  return f->aviao[f->saida];
 }
 
 /* apaga o elemento na cabeça da fila, retornando 0 em sucesso e -1 em caso de fila vazia */
 int retira (fila * f)
 {
-  struct Fila_elemento * temp;
-  if (!tamanho(f))
+  if (f->saida == f->entrada)
     return -1;
-  temp = f->final->prox;
-  f->final->prox = temp->prox;
-  f->tamanho--;
-  free(temp);
+  f->saida = (f->saida + 1) % (MAX + 1);
   return 0;
 }
 
-/* libera toda a memória alocada para uma fila */
+/* libera a memória alocada para uma fila */
 void libera(fila * f)
 {
-  while (!retira(f));
-  free (f);
+  FREE(f);
 }
 
 /* função que gerencia o aeroporto */
-
 void aeroporto (char * entrada, int pistas)
 {
   fila * decolagem = inicia(), * aterrissagem = inicia();
   int decolagens = 0, aterrissagens = 0, impedidos = 0, pistaParada = 0, esperaAterrissagem = 0, esperaDecolagem = 0;
   Aeronave temp = {1, 0};
   /* loop que avança os tempos */
-  for (temp.tempoestampa = 0; *entrada != '\0' || tamanho(decolagem) || tamanho(aterrissagem) ; temp.tempoestampa++)
+  for (; *entrada != '\0' || !(vazia(decolagem) && vazia(aterrissagem)) ; temp.tempoestampa++)
     {
       printf("Tempo %d\n",temp.tempoestampa);
       /* loop que lê as entradas do tempo correspondente */
@@ -114,38 +85,33 @@ void aeroporto (char * entrada, int pistas)
 	  /* aterrissagem */
 	  if (*entrada == 'A')
 	    {
-	      if (tamanho(aterrissagem) < 5)
-		/* fila com espaço */
-		{
-		  printf ("%d entra na fila de aterrissagem\n", temp.id);
-		  insere(aterrissagem, temp);
-		}
-	      else
+	      if (insere(aterrissagem,temp))
 		/* fila cheia */
 		{
 		  printf ("%d impedido de aterrissar\n", temp.id);
 		  impedidos++;
 		}
+	      else
+		/* fila com espaço */
+		printf ("%d entra na fila de aterrissagem\n", temp.id);
+
 	    }
 	  /* idem para o caso decolagem */
 	  else 
 	    {
-	      if (tamanho(decolagem) < 5)
-		{
-		  printf ("%d entra na fila de decolagem\n", temp.id);
-		  insere(decolagem, temp);
-		}
-	      else
+	      if (insere(decolagem, temp))
 		{
 		  printf ("%d impedido de decolar\n", temp.id);
 		  impedidos++;
 		}
+	      else
+		printf ("%d entra na fila de decolagem\n", temp.id);
 	    }
 	  /* avança o marcador de identificação do avião */
 	  temp.id++;
 	}
       /* caso haja avião esperando para aterrisar */
-      if (tamanho(aterrissagem))
+      if (!vazia(aterrissagem))
 	{
 	  printf ("%d aterrissa\n",pega(aterrissagem).id);
 	  aterrissagens++;
@@ -161,7 +127,7 @@ void aeroporto (char * entrada, int pistas)
 	  pistaParada++;
 	}
       /* caso haja avião esperando para decolar */
-      if (tamanho(decolagem))
+      if (!vazia(decolagem))
 	{
 	  printf ("%d decola\n",pega(decolagem).id);
 	  decolagens++;
@@ -170,8 +136,8 @@ void aeroporto (char * entrada, int pistas)
 	}
       else
 	{
-	  /*caso contrário, imprime a mensagem adequada de acordo com o número de pistas */
-	  printf ("Pista %sparada\n", pistas == 2 ? "de decolagem ": "");
+	  /*imprime a mensagem adequada de acordo com o número de pistas */
+	  printf ("Pista %sparada\n", pistas == 2 ? "de decolagem " : "");
 	  pistaParada++;
 	}
     }
@@ -188,7 +154,7 @@ void aeroporto (char * entrada, int pistas)
 
 int main(){
   char leitura[200] = "";
-  /* o caractere 'F' é descartado, testa-se o caractere nulo pra verificar fim */
+  /* o caractere 'F' é descartado */
   scanf( " %[^F]", leitura);
   /* chama a função do aeroporto para os dois casos */
   printf ("Aeroporto com uma pista\n\n");
