@@ -1,3 +1,13 @@
+/*******************************************************************************
+Pedro Emílio Machado de Brito - RA 137264
+31/08/2012 - MC202 turma B
+
+lab02 - Aeroporto
+
+O programa a seguir simula o funcionamento de um aeroporto, usando filas para
+organizar a decolagem e aterrissagem de aviões.
+*******************************************************************************/
+
 #include "balloc.h"
 #include <stdio.h>
 /* Utilize as macros MALLOC e FREE para alocar e desalocar memória */
