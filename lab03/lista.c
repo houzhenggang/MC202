@@ -1,10 +1,6 @@
 #include "lista.h"
 #include "balloc.h"
 
-/*
-Estrutura da fila: Ponteiro aponta para a entrada da fila, que aponta para a saída.
-*/
-
 /* estrutura que guarda cada nó da fila */
 struct listaElementoS
 {
@@ -49,7 +45,6 @@ int insere(lista l, void * elemento, int pos)
     return -2;
   if (pos < 0)
     return -3;
-  temp = l->cabeca;
   for (temp = l->cabeca; pos > 0 && temp != NULL; pos--, temp = temp->prox);
   if (temp == NULL)
     return -3;
@@ -67,6 +62,8 @@ void * pega (lista f, int pos)
 {
   listaElemento * temp;
   if (f == NULL)
+    return NULL;
+  if (pos < 0)
     return NULL;
   for (temp = f->cabeca->prox; temp != NULL && pos > 0; pos--, temp = temp->prox);
   if (temp == NULL)
@@ -88,6 +85,8 @@ int retira(lista l, int pos)
   listaElemento * temp, * del;
   if (l == NULL)
     return -2;
+  if(pos < 0)
+    return -3;
   for (temp = l->cabeca; temp != NULL && pos > 0; pos--, temp = temp->prox);
   if (temp == NULL || temp->prox == NULL)
     return -3;
