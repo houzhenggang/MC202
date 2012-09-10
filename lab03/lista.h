@@ -24,6 +24,8 @@ lista inicia(void);
 
 char pega (lista);
 
+void atribui (lista, char);
+
 grandeint tamanho (lista);
 
 int insereDir(lista, char);

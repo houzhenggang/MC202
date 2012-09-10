@@ -78,11 +78,11 @@ grandeint atogi(char * string)
 }
 
 
-void * printgi(grandeint n)
+void printgi(grandeint n)
 {
   lista temp;
   if (n == NULL)
-    return NULL;
+    return;
   temp = andaDir(n->digitos);
   if (n->sinal == -1)
     putchar('-');
@@ -90,8 +90,8 @@ void * printgi(grandeint n)
     putchar('0');
   while(temp != n->digitos)
     {
-      putchar(temp->digito + '0');
-      temp = pegaDir(temp);
+      putchar(pega(temp) + '0');
+      temp = andaDir(temp);
     }
 }
 
@@ -111,9 +111,9 @@ grandeint mais(grandeint gi1, grandeint gi2)
       if (anda2 != gi2->digitos)
 	{
 	  parcial += pega(anda2);
-	  anda2 = pegaEsq(anda2);
+	  anda2 = andaEsq(anda2);
 	}
-      insereDir(resultado, parcial%10);
+      insereDir(resultado->digitos, parcial%10);
       parcial /= 10;
     }
   return resultado;
@@ -125,53 +125,26 @@ void liberagi(grandeint gi)
   FREE(gi);
 };
 
-grandeint escala(grandeint gi, int escalar)
-{
-  grandeint resultado = iniciagi();
-  if (escalar < 0)
-    {
-      resultado->sinal = -1;
-      escalar = -escalar;
-    }
-  lista anda = andaEsq(gi->digitos); temp = inicia(temp);
-  
 
 grandeint vezes(grandeint gi1, grandeint gi2)
 {
-  grandeint resultado = iniciagi();
-  lista anda1 = andaEsq(gi1->digitos), anda2 = andaDir(gi2->digitos),
-    parcial = inicia(), parcialAnda = parcial, parcialAnda2;
-  char temp = 0;
-  while (parcial != parcialAnda || gi1->digitos != anda1 || gi2->digitos != anda2)
+  grandeint resultado = iniciagi(), fator[10], temp;
+  lista anda;
+  int i;
+  if (andaDir(gi1->digitos) == gi1->digitos || gi2->digitos == andaDir(gi2->digitos))
+    return resultado;  
+  fator[0] = iniciagi();
+  for (i = 1; i < 10; i++)
+    fator[i] = mais(fator[i-1],gi1);
+  for (anda = andaDir(gi2->digitos); anda != gi2->digitos; anda = andaDir(anda))
     {
-      temp = pega(anda1) * pega(anda2);
-      if (pegaEsq(parcialAnda) == parcial)
-	insereEsq(parcialAnda,0);
-      parcialAnda = pegaEsq(parcialAnda);
-      while (temp)
-	{
-	  atribui(parcialAnda, temp%10);
-	  temp /= 10;
-	  temp += pega(parcialAnda);
-
-      while (temp);
-      
-}
-
-grandeint vezes(grandeint gi1, grandeint gi2)
-{
-  grandeint resultado = iniciagi(), temp1, temp2;
-  grande i, j;
-  for (i = 0; i < tamanho(gi2->digitos); i++)
-    {
-      temp1 = escala(gi1,(int) pega(gi2->digitos, i));
-      for(j = 0; j < i; j++)
-	  insere(temp1->digitos, (void *) 0, 0);
-      temp2 = mais(resultado, temp1);
-      liberagi(temp1);
+      insereEsq(resultado->digitos,0);
+      temp = mais(resultado,fator[(int) pega(anda)]);
       liberagi(resultado);
-      resultado = temp2;
+      resultado = temp;
     }
-  resultado->sinal *= gi2->sinal;
+  for (i = 0; i < 10; i++)
+    liberagi(fator[i]);
+  resultado->sinal = gi1->sinal * gi2->sinal;  
   return resultado;
 }

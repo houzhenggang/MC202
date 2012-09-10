@@ -96,3 +96,20 @@ grandeint tamanho(lista l)
   liberagi(um);
   return tam;
 }
+
+void atribui(lista l, char digito)
+{
+  if (l = NULL)
+    return;
+  l->digito = digito;  
+}
+
+void remove(lista l)
+{
+  if (l = NULL)
+    return;
+  l->esq->dir = l->dir;
+  l->dir->esq = l->esq;
+  FREE(l);
+}
+
