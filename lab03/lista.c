@@ -1,111 +1,98 @@
 #include "lista.h"
 #include "balloc.h"
+#include "grandeint.h"
 
-/* estrutura que guarda cada nó da fila */
+/* estrutura que guarda cada nó da lista */
+
 struct listaElementoS
 {
-  void * dado;
-  struct listaElementoS * prox;
+  char digito;
+  struct listaElementoS * dir;
+  struct listaElementoS * esq;
 };
 
 typedef struct listaElementoS listaElemento;
 
-/* estrutura que guarda informação sobre o tamanho atual da fila e seu nó final */
-struct listaLigada
-{
-  int tamanho;
-  listaElemento * cabeca;
-};
-
 /* inicia uma fila */
 
-lista inicia (void)
+lista inicial(void)
 {
-  lista novo = (lista) MALLOC(sizeof(struct listaLigada));
+  lista novo = (lista) MALLOC(sizeof(listaElemento));
   if (novo == NULL)
     return NULL;
-  novo->cabeca = (listaElemento *) MALLOC(sizeof(listaElemento));
-  if (novo->cabeca == NULL)
-    {
-      FREE(novo);
-      return NULL;
-    }
-  novo->cabeca->dado = (void *) NULL;
-  novo->cabeca->prox = NULL;
-  novo->tamanho = 0;
+  novo->digito = -1;
+  novo->dir = novo;
+  novo->esq = novo;
   return novo;
 }
 
-/*insere um elemento no fim da fila */
+/* insere um elemento na lista */
 
-int insere(lista l, void * elemento, int pos)
+int insereDir(lista l, char dig)
 {
-  listaElemento * temp, * novo;
+  lista novo;
   if (l == NULL)
     return -2;
-  if (pos < 0)
-    return -3;
-  for (temp = l->cabeca; pos > 0 && temp != NULL; pos--, temp = temp->prox);
-  if (temp == NULL)
-    return -3;
-  novo = (listaElemento *) MALLOC(sizeof(listaElemento));
+  novo = (lista) MALLOC(sizeof(listaElemento));
   if (novo == NULL)
     return -1;
-  novo->prox = temp->prox;
-  novo->dado = elemento;
-  temp->prox = novo;
-  l->tamanho++;
+  novo->digito = dig;
+  novo->dir = l->dir;
+  novo->esq = l;
+  l->dir->esq = novo;
+  l->dir = novo;
   return 0;
 }
 
-void * pega (lista f, int pos)
+int insereEsq(lista l, char dig)
 {
-  listaElemento * temp;
-  if (f == NULL)
-    return NULL;
-  if (pos < 0)
-    return NULL;
-  for (temp = f->cabeca->prox; temp != NULL && pos > 0; pos--, temp = temp->prox);
-  if (temp == NULL)
-    return NULL;
-  return temp->dado;  
-}
-
-/* retorna no número de elementos atualmente */
-
-int tamanho(lista l)
-{
+  lista novo;
   if (l == NULL)
     return -2;
-  return l->tamanho;
-}
-
-int retira(lista l, int pos)
-{
-  listaElemento * temp, * del;
-  if (l == NULL)
-    return -2;
-  if(pos < 0)
-    return -3;
-  for (temp = l->cabeca; temp != NULL && pos > 0; pos--, temp = temp->prox);
-  if (temp == NULL || temp->prox == NULL)
-    return -3;
-  del = temp->prox;
-  temp->prox = del->prox;
-  FREE(del);
-  l->tamanho--;
+  novo = (lista) MALLOC(sizeof(listaElemento));
+  if (novo == NULL)
+    return -1;
+  novo->digito = dig;
+  novo->dir = l;
+  novo->esq = l->esq;
+  l->esq->dir = novo;
+  l->esq = novo;
   return 0;
 }
 
-int libera (lista l)
+lista andaEsq(lista l)
 {
-  if (l == NULL)
-    return -2;
-  while(!retira(l,0));
-  FREE(l->cabeca);
+  return l->esq;
+}
+
+lista andaDir(lista l)
+{
+  return l->dir;
+}
+
+char pega(lista l)
+{
+  return l->digito;
+}
+
+void libera (lista l)
+{
+  lista temp;
+  for (temp = l->dir->dir; temp != l->dir; temp = temp->dir)
+     FREE(temp->esq);
   FREE(l);
-  return 0;
 }
 
-
-  
+grandeint tamanho(lista l)
+{
+  grandeint tam = iniciagi(), um = itogi(1), temp;
+  lista iter;
+  for (iter = l->dir; iter != l; iter = iter->dir)
+    {
+      temp = mais(tam,um);
+      liberagi(tam);
+      tam = temp;
+    }
+  liberagi(um);
+  return tam;
+}

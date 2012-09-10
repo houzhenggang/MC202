@@ -34,7 +34,7 @@ grandeint itogi(int init)
     }
   while (init)
     {
-      if (insere(n->digitos, (void *) (init%10), tamanho(n->digitos)))
+      if (insereDir(n->digitos, init%10))
 	{
 	  libera(n->digitos);
 	  FREE(n);
@@ -66,7 +66,7 @@ grandeint atogi(char * string)
     string++;
   while (*string != '\0')
     {      
-      if (insere(n->digitos, (void *) (*string - '0'), 0))
+      if (insereEsq(n->digitos, *string - '0'))
 	{
 	  libera(n->digitos);
 	  FREE(n);
@@ -78,38 +78,44 @@ grandeint atogi(char * string)
 }
 
 
-char * gitoa(grandeint n)
+void * printgi(grandeint n)
 {
-  int tam;
-  char * string , *anda;
+  lista temp;
   if (n == NULL)
     return NULL;
-  tam = tamanho(n->digitos);
-    anda = string = (char *) MALLOC(sizeof(char)*(1 + tam + !tamanho(n->digitos) + (n->sinal == -1)));
+  temp = andaDir(n->digitos);
   if (n->sinal == -1)
-    *(anda++) = '-';
-  if (!tamanho(n->digitos))
-    *(anda++) = '0';
-  while(tam)
-    *(anda++) = (char) pega(n->digitos,--tam) + '0';
-  *anda = '\0';
-  return string;
+    putchar('-');
+  if (temp == n->digitos)
+    putchar('0');
+  while(temp != n->digitos)
+    {
+      putchar(temp->digito + '0');
+      temp = pegaDir(temp);
+    }
 }
 
-/* ints vão estourar seu burro */
+/* funciona só pra positivos */
 grandeint mais(grandeint gi1, grandeint gi2)
 {
   grandeint resultado = iniciagi();
-  int parcial = 0, casa;
-  /* if(gi1->sinal != gi2->sinal) */
-  /*   return menos(gi1, gi2); */
-  for (casa = 0;  parcial || tamanho(gi1->digitos) - casa > 0 || tamanho(gi2->digitos) - casa > 0; casa++ )
+  lista anda1 = andaEsq(gi1->digitos), anda2 = andaEsq(gi2->digitos);
+  char parcial = 0;
+  while ( parcial || anda1 != gi1->digitos || anda2 != gi2->digitos)
     {
-      parcial += (int) pega(gi1->digitos,casa) + (int) pega(gi2->digitos,casa);
-      insere(resultado->digitos,(void *) abs(parcial%10), tamanho(resultado->digitos));
+      if (anda1 != gi1->digitos)
+	{
+	  parcial += pega(anda1);
+	  anda1 = andaEsq(anda1);
+	}
+      if (anda2 != gi2->digitos)
+	{
+	  parcial += pega(anda2);
+	  anda2 = pegaEsq(anda2);
+	}
+      insereDir(resultado, parcial%10);
       parcial /= 10;
     }
-  resultado->sinal = gi1->sinal;  
   return resultado;
 }
 
@@ -121,17 +127,35 @@ void liberagi(grandeint gi)
 
 grandeint escala(grandeint gi, int escalar)
 {
-  grandeint resultado = iniciagi(), temp;
-  int fator = abs(escalar);
-  for ( resultado = iniciagi(); fator > 0; fator--)
+  grandeint resultado = iniciagi();
+  if (escalar < 0)
     {
-      temp = resultado;
-      resultado = mais(resultado, gi);
-      liberagi(temp);
+      resultado->sinal = -1;
+      escalar = -escalar;
     }
-  if (escalar < 0);
-  gi->sinal *= -1;
-  return resultado;
+  lista anda = andaEsq(gi->digitos); temp = inicia(temp);
+  
+
+grandeint vezes(grandeint gi1, grandeint gi2)
+{
+  grandeint resultado = iniciagi();
+  lista anda1 = andaEsq(gi1->digitos), anda2 = andaDir(gi2->digitos),
+    parcial = inicia(), parcialAnda = parcial, parcialAnda2;
+  char temp = 0;
+  while (parcial != parcialAnda || gi1->digitos != anda1 || gi2->digitos != anda2)
+    {
+      temp = pega(anda1) * pega(anda2);
+      if (pegaEsq(parcialAnda) == parcial)
+	insereEsq(parcialAnda,0);
+      parcialAnda = pegaEsq(parcialAnda);
+      while (temp)
+	{
+	  atribui(parcialAnda, temp%10);
+	  temp /= 10;
+	  temp += pega(parcialAnda);
+
+      while (temp);
+      
 }
 
 grandeint vezes(grandeint gi1, grandeint gi2)
@@ -151,26 +175,3 @@ grandeint vezes(grandeint gi1, grandeint gi2)
   resultado->sinal *= gi2->sinal;
   return resultado;
 }
-
-int compara(grandeint gi1, grandeint gi2)
-{
-  int percorre, comp;
-  if (gi1->sinal != gi2->sinal)
-    return gi1->sinal;
-  if (tamanho(gi1->digitos) != tamanho(gi2->digitos))
-    return gi1->sinal*(tamanho(gi1->digitos)-tamanho(gi2->digitos));
-  for (percorre = tamanho(gi1->digitos)-1; percorre >= 0; percorre--)
-    {
-      if ( (comp =  (int) pega(gi1->digitos, percorre) - (int) pega(gi2->digitos, percorre) ) )
-	return comp;
-    }
-  return 0;
-}
-
-grandeint menos(grandeint gi1, grandeint gi2)
-{
-  grandeint resultado = iniciagi();
-  int maxint;  
-  if (gi1->sinal < gi2->sinal)
-    return menos(gi2, gi1);
-  

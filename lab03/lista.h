@@ -1,14 +1,14 @@
+#include "grandeint.h"
+
 /*******************************************************************************
 lista.h
 
-Define as funções do TAD lista ligada de uso geral, por ponteiros pra void.
+Define as funções do TAD lista duplamente ligada;
 
-Permite inserção, leitura e remoção em qualquer ponto da lista.
-
-Uma lista de n elementos tem índices de 0 a n-1.
+Permite inserção, leitura e remoção no começo e fim da lista.
 *******************************************************************************/
 
-typedef struct listaLigada * lista;
+typedef struct listaElementoS * lista;
 
 /*
    Códigos de erro
@@ -20,12 +20,18 @@ typedef struct listaLigada * lista;
 
 lista inicia(void);
 
-int insere(lista, void *, int);
+/* 0 insere no comeco, resto no fim */
 
-void * pega (lista, int);
+char pega (lista);
 
-int tamanho (lista);
+grandeint tamanho (lista);
 
-int retira (lista, int);
+int insereDir(lista, char);
 
-int libera(lista);
+int insereEsq(lista, char);
+
+lista andaDir(lista);
+
+lista andaEsq(lista);
+
+void libera(lista);
