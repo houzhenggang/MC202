@@ -17,3 +17,13 @@ grandeint vezes(grandeint, grandeint);
 void liberagi(grandeint);
 
 int compara(grandeint, grandeint);
+
+/* funções chamadas por main */
+void soma(void);
+
+void multiplicacao(void);
+
+void divide(void);
+
+void godel(void);
+

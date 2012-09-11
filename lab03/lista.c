@@ -1,6 +1,7 @@
 #include "lista.h"
-#include "balloc.h"
 #include "grandeint.h"
+#include <stdlib.h>
+
 
 /* estrutura que guarda cada nó da lista */
 
@@ -17,7 +18,7 @@ typedef struct listaElementoS listaElemento;
 
 lista inicial(void)
 {
-  lista novo = (lista) MALLOC(sizeof(listaElemento));
+  lista novo = (lista) malloc(sizeof(listaElemento));
   if (novo == NULL)
     return NULL;
   novo->digito = 127;
@@ -34,7 +35,7 @@ int insereDir(lista l, char dig)
   lista novo;
   if (l == NULL)
     return -2;
-  novo = (lista) MALLOC(sizeof(listaElemento));
+  novo = (lista) malloc(sizeof(listaElemento));
   if (novo == NULL)
     return -1;
   novo->digito = dig;
@@ -50,7 +51,7 @@ int insereEsq(lista l, char dig)
   lista novo;
   if (l == NULL)
     return -2;
-  novo = (lista) MALLOC(sizeof(listaElemento));
+  novo = (lista) malloc(sizeof(listaElemento));
   if (novo == NULL)
     return -1;
   novo->digito = dig;
@@ -80,8 +81,8 @@ void libera (lista l)
 {
   lista temp;
   for (temp = l->dir->dir; temp != l->dir; temp = temp->dir)
-     FREE(temp->esq);
-  FREE(l);
+     free(temp->esq);
+  free(l);
 }
 
 grandeint tamanho(lista l)
@@ -111,6 +112,6 @@ void deleta(lista l)
     return;
   l->esq->dir = l->dir;
   l->dir->esq = l->esq;
-  FREE(l);
+  free(l);
 }
 

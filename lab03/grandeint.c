@@ -1,7 +1,7 @@
 #include "grandeint.h"
 #include "lista.h"
-#include "balloc.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 struct grandeintS{
   lista digitos;
@@ -10,12 +10,12 @@ struct grandeintS{
 
 grandeint iniciagi(void)
 {
-  grandeint n = (grandeint) MALLOC(sizeof(struct grandeintS));
+  grandeint n = (grandeint) malloc(sizeof(struct grandeintS));
   if (NULL == n)
     return n;
   if (NULL == (n->digitos = inicial()))
     {
-      FREE(n);
+      free(n);
       return NULL;
     }
   n->sinal = 1;
@@ -37,7 +37,7 @@ grandeint itogi(int init)
       if (insereDir(n->digitos, init%10))
 	{
 	  libera(n->digitos);
-	  FREE(n);
+	  free(n);
 	  return NULL;
 	}
       init = init/10;
@@ -69,7 +69,7 @@ grandeint atogi(char * string)
       if (insereEsq(n->digitos, *string - '0'))
 	{
 	  libera(n->digitos);
-	  FREE(n);
+	  free(n);
 	  return NULL;
 	}
       string++;
@@ -141,7 +141,7 @@ grandeint mais(grandeint gi1, grandeint gi2)
 void liberagi(grandeint gi)
 {
   libera(gi->digitos);
-  FREE(gi);
+  free(gi);
 };
 
 
