@@ -4,9 +4,9 @@ grandeint iniciagi(void);
 
 grandeint itogi(int);
 
-grandeint atogi(char * string);
+grandeint atogi(char *);
 
-char * gitoa(grandeint);
+void printgi(grandeint);
 
 grandeint mais(grandeint, grandeint);
 

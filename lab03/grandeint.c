@@ -13,7 +13,7 @@ grandeint iniciagi(void)
   grandeint n = (grandeint) MALLOC(sizeof(struct grandeintS));
   if (NULL == n)
     return n;
-  if (NULL == (n->digitos = inicia()))
+  if (NULL == (n->digitos = inicial()))
     {
       FREE(n);
       return NULL;
@@ -101,21 +101,36 @@ grandeint mais(grandeint gi1, grandeint gi2)
   grandeint resultado = iniciagi();
   lista anda1 = andaEsq(gi1->digitos), anda2 = andaEsq(gi2->digitos);
   char parcial = 0;
-  while ( parcial || anda1 != gi1->digitos || anda2 != gi2->digitos)
+  while (1)
     {
       if (anda1 != gi1->digitos)
 	{
-	  parcial += pega(anda1);
+	  parcial += pega(anda1) * gi1->sinal;
 	  anda1 = andaEsq(anda1);
 	}
       if (anda2 != gi2->digitos)
 	{
-	  parcial += pega(anda2);
+	  parcial += pega(anda2) * gi2->sinal;
 	  anda2 = andaEsq(anda2);
 	}
+      if (!( parcial || anda1 != gi1->digitos || anda2 != gi2->digitos))
+	break;
       insereDir(resultado->digitos, parcial%10);
       parcial /= 10;
     }
+  resultado->sinal = pega(andaDir(resultado->digitos)) > 0 ? 1 : -1;
+  parcial = 0;
+  anda1 = andaEsq(resultado->digitos);
+  while (anda1 != resultado->digitos)
+    {
+      while ((parcial + pega(anda1)) * resultado->sinal < 0)
+	parcial += 10 * resultado->sinal;
+      atribui(anda1, abs((parcial + pega(anda1)) % 10));
+      anda1 = andaEsq(anda1);
+      parcial /= -10;
+    }
+  while (pega(andaDir(resultado->digitos)) == 0)
+    deleta(andaDir(resultado->digitos));
   return resultado;
 }
 

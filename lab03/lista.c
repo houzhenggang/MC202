@@ -20,7 +20,8 @@ lista inicial(void)
   lista novo = (lista) MALLOC(sizeof(listaElemento));
   if (novo == NULL)
     return NULL;
-  novo->digito = -1;
+  novo->digito = 127;
+
   novo->dir = novo;
   novo->esq = novo;
   return novo;
@@ -99,14 +100,14 @@ grandeint tamanho(lista l)
 
 void atribui(lista l, char digito)
 {
-  if (l = NULL)
+  if (l == NULL)
     return;
   l->digito = digito;  
 }
 
-void remove(lista l)
+void deleta(lista l)
 {
-  if (l = NULL)
+  if (l == NULL)
     return;
   l->esq->dir = l->dir;
   l->dir->esq = l->esq;

@@ -18,7 +18,7 @@ typedef struct listaElementoS * lista;
    -3 em posição inválida
 */
 
-lista inicia(void);
+lista inicial(void);
 
 /* 0 insere no comeco, resto no fim */
 
@@ -37,3 +37,5 @@ lista andaDir(lista);
 lista andaEsq(lista);
 
 void libera(lista);
+
+void deleta(lista);
