@@ -121,14 +121,18 @@ grandeint mais(grandeint gi1, grandeint gi2)
   resultado->sinal = pega(andaDir(resultado->digitos)) > 0 ? 1 : -1;
   parcial = 0;
   anda1 = andaEsq(resultado->digitos);
+  /* começa loop do mal */
   while (anda1 != resultado->digitos)
     {
-      while ((parcial + pega(anda1)) * resultado->sinal < 0)
-	parcial += 10 * resultado->sinal;
-      atribui(anda1, abs((parcial + pega(anda1)) % 10));
+      while (pega(anda1) * resultado->sinal < 0)
+	{	  
+	  atribui(anda1,pega(anda1) + 10 * resultado->sinal);
+	  atribui(andaEsq(anda1),pega(andaEsq(anda1)) - resultado->sinal);
+	}
+      atribui(anda1,abs(pega(anda1)));
       anda1 = andaEsq(anda1);
-      parcial /= -10;
     }
+  /* termina loop do mal */
   while (pega(andaDir(resultado->digitos)) == 0)
     deleta(andaDir(resultado->digitos));
   return resultado;
@@ -163,3 +167,4 @@ grandeint vezes(grandeint gi1, grandeint gi2)
   resultado->sinal = gi1->sinal * gi2->sinal;  
   return resultado;
 }
+
