@@ -1,7 +1,11 @@
 #include "grandeint.h"
 #include "lista.h"
+#include "balloc.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#define malloc MALLOC
+#define free FREE
 
 struct grandeintS{
   lista digitos;
@@ -84,6 +88,11 @@ void printgi(grandeint n)
   if (n == NULL)
     return;
   temp = andaDir(n->digitos);
+  if (n->sinal == -2)
+    {
+      printf("nan");
+      return;
+    }
   if (n->sinal == -1)
     putchar('-');
   if (temp == n->digitos)
@@ -95,47 +104,55 @@ void printgi(grandeint n)
     }
 }
 
-/* funciona só pra positivos */
 grandeint mais(grandeint gi1, grandeint gi2)
 {
   grandeint resultado = iniciagi();
+  incrementa(resultado,gi1);
+  incrementa(resultado,gi2);
+  return resultado;
+}
+
+void incrementa(grandeint gi1, grandeint gi2)
+{
   lista anda1 = andaEsq(gi1->digitos), anda2 = andaEsq(gi2->digitos);
   char parcial = 0;
   while (1)
     {
       if (anda1 != gi1->digitos)
-	{
-	  parcial += pega(anda1) * gi1->sinal;
-	  anda1 = andaEsq(anda1);
-	}
+	parcial += pega(anda1) * gi1->sinal;
       if (anda2 != gi2->digitos)
 	{
 	  parcial += pega(anda2) * gi2->sinal;
 	  anda2 = andaEsq(anda2);
 	}
-      if (!( parcial || anda1 != gi1->digitos || anda2 != gi2->digitos))
+      if (!parcial && anda1 == gi1->digitos && anda2 == gi2->digitos)
 	break;
-      insereDir(resultado->digitos, parcial%10);
+      if (anda1 == gi1->digitos)
+	insereDir(anda1, parcial%10);
+      else
+	{
+	  atribui(anda1, parcial%10);
+	  anda1 = andaEsq(anda1);
+	}
       parcial /= 10;
     }
-  resultado->sinal = pega(andaDir(resultado->digitos)) > 0 ? 1 : -1;
+  gi1->sinal = pega(andaDir(gi1->digitos)) < 0 ? -1 : 1;
   parcial = 0;
-  anda1 = andaEsq(resultado->digitos);
+  anda1 = andaEsq(gi1->digitos);
   /* começa loop do mal */
-  while (anda1 != resultado->digitos)
+  while (anda1 != gi1->digitos)
     {
-      while (pega(anda1) * resultado->sinal < 0)
+      while (pega(anda1) * gi1->sinal < 0)
 	{	  
-	  atribui(anda1,pega(anda1) + 10 * resultado->sinal);
-	  atribui(andaEsq(anda1),pega(andaEsq(anda1)) - resultado->sinal);
+	  atribui(anda1,pega(anda1) + 10 * gi1->sinal);
+	  atribui(andaEsq(anda1),pega(andaEsq(anda1)) - gi1->sinal);
 	}
       atribui(anda1,abs(pega(anda1)));
       anda1 = andaEsq(anda1);
     }
   /* termina loop do mal */
-  while (pega(andaDir(resultado->digitos)) == 0)
-    deleta(andaDir(resultado->digitos));
-  return resultado;
+  while (pega(andaDir(gi1->digitos)) == 0)
+    deleta(andaDir(gi1->digitos));
 }
 
 void liberagi(grandeint gi)
@@ -147,7 +164,7 @@ void liberagi(grandeint gi)
 
 grandeint vezes(grandeint gi1, grandeint gi2)
 {
-  grandeint resultado = iniciagi(), fator[10], temp;
+  grandeint resultado = iniciagi(), fator[10];
   lista anda;
   int i;
   if (andaDir(gi1->digitos) == gi1->digitos || gi2->digitos == andaDir(gi2->digitos))
@@ -158,9 +175,7 @@ grandeint vezes(grandeint gi1, grandeint gi2)
   for (anda = andaDir(gi2->digitos); anda != gi2->digitos; anda = andaDir(anda))
     {
       insereEsq(resultado->digitos,0);
-      temp = mais(resultado,fator[(int) pega(anda)]);
-      liberagi(resultado);
-      resultado = temp;
+      incrementa(resultado,fator[(int) pega(anda)]);
     }
   for (i = 0; i < 10; i++)
     liberagi(fator[i]);
@@ -168,3 +183,61 @@ grandeint vezes(grandeint gi1, grandeint gi2)
   return resultado;
 }
 
+grandeint divisao(grandeint gi1, grandeint gi2)
+{
+  grandeint resultado = iniciagi(), resto, temp;
+  lista ultimo;
+  char parcial = 0;  
+  if (andaEsq(gi2->digitos) == gi2->digitos)
+    {
+      resultado->sinal = -2;
+      return resultado;
+    }
+  resto = mais(resultado,gi1);
+  temp = mais(resultado,gi2);
+  ultimo = andaEsq(temp->digitos);
+  while (compara(resto, temp, 1) > 0)
+    insereEsq(temp->digitos, 0);
+  temp->sinal = -resto->sinal;
+  while (1)
+    {
+      while (compara(resto, temp, 1) >= 0)
+	{
+	  incrementa (resto, temp);
+	  parcial++;
+	}
+      if (parcial || andaEsq(resultado->digitos) != resultado->digitos)
+	{
+	  insereEsq(resultado->digitos, parcial);
+	  parcial = 0;
+	}
+      if (andaEsq(temp->digitos) == ultimo)
+	break;
+      deleta(andaEsq(temp->digitos));
+    }
+  if (resultado->digitos != andaDir(resultado->digitos))
+
+    resultado->sinal = gi1->sinal * gi2->sinal;
+  return resultado;  
+}
+
+/* sign(compara(gi1,gi2)) == sign(gi1-gi2) */
+int compara(grandeint gi1, grandeint gi2, int mod)
+{
+  lista anda1 = andaDir(gi1->digitos), anda2 = andaDir(gi2->digitos);
+  char diff = 0;  
+  if (gi1->sinal != gi2->sinal && !mod)
+    return gi1->sinal == 1;
+  while (anda1 != gi1->digitos && anda2 != gi2->digitos)
+    {
+      if (!diff)
+	diff = pega(anda1) - pega(anda2);
+      anda1 = andaDir(anda1);
+      anda2 = andaDir(anda2);
+    }
+  if (anda1 == gi1->digitos && anda2 == gi2->digitos)
+    return diff;
+  if (anda1 != gi1->digitos)
+    return 1;
+  return -1;
+}

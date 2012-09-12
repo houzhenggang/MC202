@@ -10,13 +10,13 @@ void printgi(grandeint);
 
 grandeint mais(grandeint, grandeint);
 
-grandeint escala(grandeint, int);
+void incrementa(grandeint, grandeint);
 
 grandeint vezes(grandeint, grandeint);
 
 void liberagi(grandeint);
 
-int compara(grandeint, grandeint);
+int compara(grandeint, grandeint, int);
 
 /* funções chamadas por main */
 void soma(void);
