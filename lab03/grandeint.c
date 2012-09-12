@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define malloc MALLOC
-#define free FREE
+/* #define malloc MALLOC */
+/* #define free FREE */
 
 struct grandeintS{
   lista digitos;
@@ -81,6 +81,36 @@ grandeint atogi(char * string)
   return n;
 }
 
+grandeint giscan(void)
+{
+  grandeint n = iniciagi();
+  char leitura;
+  if (n == NULL)
+    return NULL;
+  leitura = getchar();
+  switch (leitura)
+    {
+    case '-':
+      n->sinal = -1;
+    case '+':
+      leitura = getchar();
+    default:
+      break;
+    }
+  while (leitura == '0')
+    leitura = getchar();
+  while (leitura >= '0' && leitura <= '9')
+    {      
+      if (insereEsq(n->digitos, leitura - '0'))
+	{
+	  libera(n->digitos);
+	  free(n);
+	  return NULL;
+	}
+      leitura = getchar();
+    }
+  return n;
+}
 
 void printgi(grandeint n)
 {
@@ -216,8 +246,9 @@ grandeint divisao(grandeint gi1, grandeint gi2)
       deleta(andaEsq(temp->digitos));
     }
   if (resultado->digitos != andaDir(resultado->digitos))
-
     resultado->sinal = gi1->sinal * gi2->sinal;
+  liberagi(resto);
+  liberagi(temp);
   return resultado;  
 }
 
@@ -240,4 +271,63 @@ int compara(grandeint gi1, grandeint gi2, int mod)
   if (anda1 != gi1->digitos)
     return 1;
   return -1;
+}
+
+
+/*******************************************************************************
+
+COMEÇAM AS FUNÇÕES CHAMADAS EM principal.c
+
+*******************************************************************************/
+
+void soma (void)
+{
+  grandeint a, b, resultado;
+  a = giscan();
+  b = giscan();
+  resultado = mais(a,b);
+  printgi(resultado);
+  putchar('\n');
+  liberagi(a);
+  liberagi(b);
+  liberagi(resultado);
+}
+
+void multiplicacao (void)
+{
+  grandeint a, b, resultado;
+  a = giscan();
+  b = giscan();
+  resultado = vezes(a,b);
+  printgi(resultado);
+  putchar('\n');
+  liberagi(a);
+  liberagi(b);
+  liberagi(resultado);
+}
+
+void divide (void)
+{
+  grandeint a, b, resultado;
+  a = giscan();
+  b = giscan();
+  resultado = divisao(a,b);
+  printgi(resultado);
+  putchar('\n');
+  liberagi(a);
+  liberagi(b);
+  liberagi(resultado);
+}
+
+void godel (void)
+{
+  /* grandeint a, b, resultado; */
+  /* a = giscan(); */
+  /* b = giscan(); */
+  /* resultado = mais(a,b); */
+  /* printgi(resultado); */
+  /* liberagi(a); */
+  /* liberagi(b); */
+  /* liberagi(resultado); */
+  return;
 }

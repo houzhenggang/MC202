@@ -6,6 +6,8 @@ grandeint itogi(int);
 
 grandeint atogi(char *);
 
+grandeint giscan(void);
+
 void printgi(grandeint);
 
 grandeint mais(grandeint, grandeint);
@@ -17,6 +19,8 @@ grandeint vezes(grandeint, grandeint);
 void liberagi(grandeint);
 
 int compara(grandeint, grandeint, int);
+
+grandeint divisao(grandeint, grandeint);
 
 /* funções chamadas por main */
 void soma(void);
