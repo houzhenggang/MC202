@@ -1,7 +1,10 @@
 #include "lista.h"
 #include "grandeint.h"
+#include "balloc.h"
 #include <stdlib.h>
 
+/* #define malloc MALLOC */
+/* #define free FREE */
 
 /* estrutura que guarda cada nó da lista */
 
