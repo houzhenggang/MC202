@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* #define malloc MALLOC */
-/* #define free FREE */
+#define malloc MALLOC
+#define free FREE
 
 struct grandeintS{
   lista digitos;
@@ -190,7 +190,6 @@ void liberagi(grandeint gi)
   libera(gi->digitos);
   free(gi);
 }
-
 
 grandeint vezes(grandeint gi1, grandeint gi2)
 {

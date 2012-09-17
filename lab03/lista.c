@@ -3,8 +3,8 @@
 #include "balloc.h"
 #include <stdlib.h>
 
-/* #define malloc MALLOC */
-/* #define free FREE */
+#define malloc MALLOC
+#define free FREE
 
 /* estrutura que guarda cada nó da lista */
 
