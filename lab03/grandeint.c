@@ -214,9 +214,8 @@ grandeint vezes(grandeint gi1, grandeint gi2)
 
 grandeint divisao(grandeint gi1, grandeint gi2)
 {
-  grandeint resultado = iniciagi(), resto, temp[8];
+  grandeint resultado = iniciagi(), resto, temp[9];
   lista ultimo;
-  char parcial = 0;  
   int i;
   if (andaEsq(gi2->digitos) == gi2->digitos)
     {
@@ -225,32 +224,34 @@ grandeint divisao(grandeint gi1, grandeint gi2)
     }
   resto = mais(resultado,gi1);
   temp[0] = mais(resultado,gi2);
-  for (i = 1; i < 8; i++)
+  for (i = 1; i < 9; i++)
       temp[i] = mais(temp[i-1],gi2);
   ultimo = andaEsq(temp[0]->digitos);
-  while (compara(resto, temp, 1) > 0)
-    insereEsq(temp->digitos, 0);
-  temp->sinal = -resto->sinal;
+  while (compara(resto, temp[8], 1) > 0)
+    for(i = 0; i < 9; i++)
+      insereEsq(temp[i]->digitos, 0);
+  for(i = 0; i < 9; i++)
+    temp[i]->sinal = -resto->sinal;
   while (1)
     {
-      while (compara(resto, temp, 1) >= 0)
-	{
-	  incrementa (resto, temp);
-	  parcial++;
-	}
-      if (parcial || andaEsq(resultado->digitos) != resultado->digitos)
-	{
-	  insereEsq(resultado->digitos, parcial);
-	  parcial = 0;
-	}
-      if (andaEsq(temp->digitos) == ultimo)
+      for (i = 8; i >= 0; i--)
+	if (compara(resto, temp[i], 1) >= 0)
+	  {
+	    incrementa (resto, temp[i]);
+	    break;
+	  }
+      if (i != -1 || andaEsq(resultado->digitos) != resultado->digitos)
+	  insereEsq(resultado->digitos, i+1);
+      if (andaEsq(temp[0]->digitos) == ultimo)
 	break;
-      deleta(andaEsq(temp->digitos));
+      for (i = 0; i < 9; i++)
+	deleta(andaEsq(temp[i]->digitos));
     }
   if (resultado->digitos != andaDir(resultado->digitos))
     resultado->sinal = gi1->sinal * gi2->sinal;
   liberagi(resto);
-  liberagi(temp);
+  for (i = 0; i < 9; i++)
+    liberagi(temp[i]);
   return resultado;  
 }
 
@@ -308,23 +309,23 @@ void multiplicacao (void)
   liberagi(resultado);
 }
 
-/* void divide (void) */
-/* { */
-/*   grandeint a, b, resultado; */
-/*   a = giscan(); */
-/*   b = giscan(); */
-/*   resultado = divisao(a,b); */
-/*   printgi(resultado); */
-/*   putchar('\n'); */
-/*   liberagi(a); */
-/*   liberagi(b); */
-/*   liberagi(resultado); */
-/* } */
-
 void divide (void)
 {
-  return;
+  grandeint a, b, resultado;
+  a = giscan();
+  b = giscan();
+  resultado = divisao(a,b);
+  printgi(resultado);
+  putchar('\n');
+  liberagi(a);
+  liberagi(b);
+  liberagi(resultado);
 }
+
+/* void divide (void) */
+/* { */
+/*   return; */
+/* } */
 
 int primo[] = 
   { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541};
