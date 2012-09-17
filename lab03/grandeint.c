@@ -305,17 +305,22 @@ void multiplicacao (void)
   liberagi(resultado);
 }
 
+/* void divide (void) */
+/* { */
+/*   grandeint a, b, resultado; */
+/*   a = giscan(); */
+/*   b = giscan(); */
+/*   resultado = divisao(a,b); */
+/*   printgi(resultado); */
+/*   putchar('\n'); */
+/*   liberagi(a); */
+/*   liberagi(b); */
+/*   liberagi(resultado); */
+/* } */
+
 void divide (void)
 {
-  grandeint a, b, resultado;
-  a = giscan();
-  b = giscan();
-  resultado = divisao(a,b);
-  printgi(resultado);
-  putchar('\n');
-  liberagi(a);
-  liberagi(b);
-  liberagi(resultado);
+  return;
 }
 
 int primo[] = 
