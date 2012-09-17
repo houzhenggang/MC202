@@ -1,3 +1,5 @@
+#ifndef LISTA_H
+#define LISTA_H
 #include "grandeint.h"
 
 /*******************************************************************************
@@ -39,3 +41,4 @@ lista andaEsq(lista);
 void libera(lista);
 
 void deleta(lista);
+#endif

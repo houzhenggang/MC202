@@ -1,3 +1,5 @@
+#ifndef GRANDEINT_H
+#define GRANDEINT_H
 typedef struct grandeintS * grandeint;
 
 grandeint iniciagi(void);
@@ -30,4 +32,4 @@ void multiplicacao(void);
 void divide(void);
 
 void godel(void);
-
+#endif

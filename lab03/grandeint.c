@@ -189,7 +189,7 @@ void liberagi(grandeint gi)
 {
   libera(gi->digitos);
   free(gi);
-};
+}
 
 
 grandeint vezes(grandeint gi1, grandeint gi2)
