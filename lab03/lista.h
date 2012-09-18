@@ -1,6 +1,5 @@
 #ifndef LISTA_H
 #define LISTA_H
-#include "grandeint.h"
 
 /*******************************************************************************
 lista.h
@@ -19,7 +18,9 @@ struct listaElementoS
   struct listaElementoS * esq;
 };
 
-typedef struct listaElementoS * lista;
+typedef struct listaElementoS listaElemento;
+
+typedef listaElemento * lista;
 
 /*
    Códigos de erro
@@ -31,21 +32,9 @@ typedef struct listaElementoS * lista;
 
 lista inicial(void);
 
-/* 0 insere no comeco, resto no fim */
-
-char pega (lista);
-
-void atribui (lista, char);
-
-/* grandeint tamanho (lista); */
-
 int insereDir(lista, char);
 
 int insereEsq(lista, char);
-
-lista andaDir(lista);
-
-lista andaEsq(lista);
 
 void libera(lista);
 

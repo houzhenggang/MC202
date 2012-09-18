@@ -7,21 +7,10 @@
 #define malloc MALLOC
 #define free FREE
 
-/* struct grandeintS{ */
-/*   lista digitos; */
-/*   char sinal; */
-/* }; */
-
 grandeint iniciagi(void)
 {
   grandeint n = (grandeint) malloc(sizeof(struct grandeintS));
-  if (NULL == n)
-    return n;
-  if (NULL == (n->digitos = inicial()))
-    {
-      free(n);
-      return NULL;
-    }
+  n->digitos = inicial();
   n->sinal = 1;
   return n;
 }
@@ -29,8 +18,6 @@ grandeint iniciagi(void)
 grandeint itogi(int init)
 {
   grandeint n = iniciagi();  
-    if (n == NULL)
-      return NULL;
   if (init < 0)
     {
       init *= -1;
@@ -38,12 +25,7 @@ grandeint itogi(int init)
     }
   while (init)
     {
-      if (insereDir(n->digitos, init%10))
-	{
-	  libera(n->digitos);
-	  free(n);
-	  return NULL;
-	}
+      insereDir(n->digitos, init%10);
       init = init/10;
     }
   return n;
@@ -52,8 +34,6 @@ grandeint itogi(int init)
 grandeint atogi(char * string)
 {
   grandeint n = iniciagi();
-  if (n == NULL)
-    return NULL;
   switch (*string)
     {
     case '+':
@@ -70,12 +50,7 @@ grandeint atogi(char * string)
     string++;
   while (*string != '\0')
     {      
-      if (insereEsq(n->digitos, *string - '0'))
-	{
-	  libera(n->digitos);
-	  free(n);
-	  return NULL;
-	}
+      insereEsq(n->digitos, *string - '0');
       string++;
     }
   return n;
@@ -85,8 +60,6 @@ grandeint giscan(void)
 {
   grandeint n = iniciagi();
   char leitura;
-  if (n == NULL)
-    return NULL;
   leitura = getchar();
   switch (leitura)
     {
@@ -101,12 +74,7 @@ grandeint giscan(void)
     leitura = getchar();
   while (leitura >= '0' && leitura <= '9')
     {      
-      if (insereEsq(n->digitos, leitura - '0'))
-	{
-	  libera(n->digitos);
-	  free(n);
-	  return NULL;
-	}
+      insereEsq(n->digitos, leitura - '0');
       leitura = getchar();
     }
   return n;
@@ -115,8 +83,6 @@ grandeint giscan(void)
 void printgi(grandeint n)
 {
   lista temp;
-  if (n == NULL)
-    return;
   temp = n->digitos->dir;
   if (n->sinal == -2)
     {
@@ -322,17 +288,13 @@ void divide (void)
   liberagi(resultado);
 }
 
-/* void divide (void) */
-/* { */
-/*   return; */
-/* } */
-
 int primo[] = 
-  { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541};
+  { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+
 
 void godel (void)
 {
-  char leitura[101];
+  char leitura[11];
   grandeint resultado, temp, giprimo;
   int i, j;
   resultado = itogi(1);
@@ -363,7 +325,7 @@ void godel (void)
 	}
       if (leitura[i] >= '1' && leitura[i] <= '9')
 	j = leitura[i] - '0';
-      else
+      else if (j)
 	j += 10;
       while (j > 0)
 	{
@@ -379,10 +341,4 @@ void godel (void)
   liberagi(resultado);
   return;
 }
-
-/* void godel (void)  */
-/* { */
-/*   return;   */
-/* } */
-
   
