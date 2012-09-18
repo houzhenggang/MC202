@@ -31,31 +31,6 @@ grandeint itogi(int init)
   return n;
 }
 
-grandeint atogi(char * string)
-{
-  grandeint n = iniciagi();
-  switch (*string)
-    {
-    case '+':
-      string++;
-      break;
-    case '-':
-      n->sinal = -1;
-      string++;
-      break;
-    default:
-      break;
-    }
-  while (*string == '0')
-    string++;
-  while (*string != '\0')
-    {      
-      insereEsq(n->digitos, *string - '0');
-      string++;
-    }
-  return n;
-}
-
 grandeint giscan(void)
 {
   grandeint n = iniciagi();
@@ -132,7 +107,8 @@ void incrementa(grandeint gi1, grandeint gi2)
 	}
       parcial /= 10;
     }
-  gi1->sinal = gi1->digitos->dir->digito < 0 ? -1 : 1;
+  for (anda1 = gi1->digitos->dir; !anda1->digito && anda1->dir != gi1->digitos; anda1 = anda1->dir);
+  gi1->sinal = anda1->digito < 0 ? -1 : 1;
   parcial = 0;
   anda1 = gi1->digitos->esq;
   /* começa loop do mal */
@@ -325,7 +301,7 @@ void godel (void)
 	}
       if (leitura[i] >= '1' && leitura[i] <= '9')
 	j = leitura[i] - '0';
-      else if (j)
+      else
 	j += 10;
       while (j > 0)
 	{

@@ -14,7 +14,7 @@ grandeint iniciagi(void);
 
 grandeint itogi(int);
 
-grandeint atogi(char *);
+/* grandeint atogi(char *); */
 
 grandeint giscan(void);
 
