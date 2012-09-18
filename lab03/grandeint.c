@@ -11,6 +11,14 @@ grandeint iniciagi(void)
 {
   grandeint n = (grandeint) malloc(sizeof(struct grandeintS));
   n->digitos = inicial();
+
+  /* 
+     a convenção de sinal é:
+     1 para número não-negativo
+     -1 para número negativo
+     -2 para nan
+  */
+
   n->sinal = 1;
   return n;
 }
@@ -18,14 +26,16 @@ grandeint iniciagi(void)
 grandeint itogi(int init)
 {
   grandeint n = iniciagi();  
+  /* atribui o sinal */
   if (init < 0)
     {
       init *= -1;
       n->sinal = -1;
     }
+  /* itera sobre o int */
   while (init)
-    {
-      insereDir(n->digitos, init%10);
+    { 
+      insereDir(n->digitos, init%10); 
       init = init/10;
     }
   return n;
@@ -35,18 +45,22 @@ grandeint giscan(void)
 {
   grandeint n = iniciagi();
   char leitura;
-  leitura = getchar();
-  switch (leitura)
-    {
-    case '-':
-      n->sinal = -1;
-    case '+':
-      leitura = getchar();
-    default:
-      break;
-    }
-  while (leitura == '0')
+  /* loop que ajusta o sinal e descarta zeros até encontrar dígitos significativos */
+  do {
     leitura = getchar();
+    switch (leitura)
+      {
+      case '-':
+	n->sinal = -1;
+      case '+':
+      default:
+	break;
+      }
+    if (leitura == '\n')
+      break;
+  }
+  while (leitura < '1' || leitura > '9');
+  /* loop que efetua a leitura dos dígitos */
   while (leitura >= '0' && leitura <= '9')
     {      
       insereEsq(n->digitos, leitura - '0');
@@ -59,15 +73,19 @@ void printgi(grandeint n)
 {
   lista temp;
   temp = n->digitos->dir;
+  /* se houve divisão por zero */
   if (n->sinal == -2)
     {
       printf("nan");
       return;
     }
+  /* imprime sinal caso necessário */
   if (n->sinal == -1)
     putchar('-');
+  /* se o número é 0 precisamos imprimir */
   if (temp == n->digitos)
     putchar('0');
+  /* imprime até acabarem os dígitos */
   while(temp != n->digitos)
     {
       putchar(temp->digito + '0');
@@ -77,6 +95,7 @@ void printgi(grandeint n)
 
 grandeint mais(grandeint gi1, grandeint gi2)
 {
+  /* inicia grandeint 0 e o incrementa de ambos inteiros */
   grandeint resultado = iniciagi();
   incrementa(resultado,gi1);
   incrementa(resultado,gi2);

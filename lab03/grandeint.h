@@ -10,29 +10,41 @@ struct grandeintS{
 
 typedef struct grandeintS * grandeint;
 
+
+/* inicia um grandeint igual a 0 */
 grandeint iniciagi(void);
 
+/* converte de int para grandeint */
 grandeint itogi(int);
 
-/* grandeint atogi(char *); */
-
+/* lê um grandeint da entrada padrão */
 grandeint giscan(void);
 
+/* imprime um grandeint na saída padrão */
 void printgi(grandeint);
 
+/* retorna um grandeint com a soma dos argumentos */
 grandeint mais(grandeint, grandeint);
 
+/* incrementa o primeiro grandeint do argumento com o segundo */
 void incrementa(grandeint, grandeint);
 
+/* retorna um grandeint com o produto dos argumentos */
 grandeint vezes(grandeint, grandeint);
 
+/* libera toda a memória de um grandeint */
 void liberagi(grandeint);
 
+/* retorna < 0 se o primeiro for menor que o segundo,
+0 se ambos forem iguais, e > 0 se o segundo for maior
+Passar o argumento int diferente de zero compara módulo */
 int compara(grandeint, grandeint, int);
 
+/* retorna um grandeint igual ao quociente entre o primeiro e o segundo */
 grandeint divisao(grandeint, grandeint);
 
 /* funções chamadas por main */
+
 void soma(void);
 
 void multiplicacao(void);
@@ -40,4 +52,5 @@ void multiplicacao(void);
 void divide(void);
 
 void godel(void);
+
 #endif
