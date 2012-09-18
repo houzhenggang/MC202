@@ -1,7 +1,17 @@
 #ifndef GRANDEINT_H
 #define GRANDEINT_H
-
 #include "lista.h"
+
+/*******************************************************************************
+Pedro Emílio Machado de Brito - RA 137264
+18/09/2012 - MC202 turma B
+
+lab03 - Números indefinidamente grandes
+
+grandeint.h
+
+Define assinaturas de funções para lidar com inteiros indefinidamentes grandes
+*******************************************************************************/
 
 struct grandeintS{
   lista digitos;
