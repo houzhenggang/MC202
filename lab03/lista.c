@@ -1,4 +1,4 @@
-#include "lista.h"
+/* #include "lista.h" */
 #include "grandeint.h"
 #include "balloc.h"
 #include <stdlib.h>
@@ -8,12 +8,6 @@
 
 /* estrutura que guarda cada nó da lista */
 
-struct listaElementoS
-{
-  char digito;
-  struct listaElementoS * dir;
-  struct listaElementoS * esq;
-};
 
 typedef struct listaElementoS listaElemento;
 
@@ -88,19 +82,19 @@ void libera (lista l)
   free(l);
 }
 
-grandeint tamanho(lista l)
-{
-  grandeint tam = iniciagi(), um = itogi(1), temp;
-  lista iter;
-  for (iter = l->dir; iter != l; iter = iter->dir)
-    {
-      temp = mais(tam,um);
-      liberagi(tam);
-      tam = temp;
-    }
-  liberagi(um);
-  return tam;
-}
+/* grandeint tamanho(lista l) */
+/* { */
+/*   grandeint tam = iniciagi(), um = itogi(1), temp; */
+/*   lista iter; */
+/*   for (iter = l->dir; iter != l; iter = iter->dir) */
+/*     { */
+/*       temp = mais(tam,um); */
+/*       liberagi(tam); */
+/*       tam = temp; */
+/*     } */
+/*   liberagi(um); */
+/*   return tam; */
+/* } */
 
 void atribui(lista l, char digito)
 {

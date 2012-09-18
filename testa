@@ -3,5 +3,5 @@
 for f in testes/*.in
     do
     echo "Teste $f:"
-    colordiff  -s <(valgrind --leak-check=full -q bin/lab* < $f) ${f%.in}.res
+    colordiff  -s <(valgrind --leak-check=full -q bin/lab* < $f 2> /dev/null) ${f%.in}.res
     done      

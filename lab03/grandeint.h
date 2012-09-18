@@ -1,5 +1,13 @@
 #ifndef GRANDEINT_H
 #define GRANDEINT_H
+
+#include "lista.h"
+
+struct grandeintS{
+  lista digitos;
+  char sinal;
+};
+
 typedef struct grandeintS * grandeint;
 
 grandeint iniciagi(void);

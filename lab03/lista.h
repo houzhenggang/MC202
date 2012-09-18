@@ -8,7 +8,16 @@ lista.h
 Define as funções do TAD lista duplamente ligada;
 
 Permite inserção, leitura e remoção no começo e fim da lista.
+
 *******************************************************************************/
+
+
+struct listaElementoS
+{
+  char digito;
+  struct listaElementoS * dir;
+  struct listaElementoS * esq;
+};
 
 typedef struct listaElementoS * lista;
 
@@ -28,7 +37,7 @@ char pega (lista);
 
 void atribui (lista, char);
 
-grandeint tamanho (lista);
+/* grandeint tamanho (lista); */
 
 int insereDir(lista, char);
 
