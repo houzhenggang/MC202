@@ -1,5 +1,5 @@
 #include "lista.h"
-#include "balloc.h"
+#include <stdlib.h>
 
 /*******************************************************************************
 Pedro Emílio Machado de Brito - RA 137264
@@ -16,7 +16,7 @@ Implementa funções para lidar com o TAD lista.
 
 lista inicial(void)
 {
-  lista novo = (lista) MALLOC(sizeof(listaElemento));
+  lista novo = (lista) malloc(sizeof(listaElemento));
   /* valor armazenado no nó cabeça */
   novo->digito = 127;
   novo->dir = novo;
@@ -27,7 +27,7 @@ lista inicial(void)
 int insereDir(lista l, char dig)
 {
   lista novo;
-  novo = (lista) MALLOC(sizeof(listaElemento));
+  novo = (lista) malloc(sizeof(listaElemento));
   novo->digito = dig;
   novo->dir = l->dir;
   novo->esq = l;
@@ -39,7 +39,7 @@ int insereDir(lista l, char dig)
 int insereEsq(lista l, char dig)
 {
   lista novo;
-  novo = (lista) MALLOC(sizeof(listaElemento));
+  novo = (lista) malloc(sizeof(listaElemento));
   novo->digito = dig;
   novo->dir = l;
   novo->esq = l->esq;
@@ -53,14 +53,14 @@ void libera (lista l)
   lista temp;
   /* percorre liberando todos */
   for (temp = l->dir->dir; temp != l->dir; temp = temp->dir)
-     FREE(temp->esq);
-  FREE(l);
+     free(temp->esq);
+  free(l);
 }
 
 void deleta(lista l)
 {
   l->esq->dir = l->dir;
   l->dir->esq = l->esq;
-  FREE(l);
+  free(l);
 }
 

@@ -1,6 +1,6 @@
 #include "grandeint.h"
 #include "lista.h"
-#include "balloc.h"
+#include <stdlib.h>
 #include <stdio.h>
 
 /*******************************************************************************
@@ -16,7 +16,7 @@ Implementa funções para lidar com inteiros indefinidamente grandes.
 
 grandeint iniciagi(void)
 {
-  grandeint n = (grandeint) MALLOC(sizeof(struct grandeintS));
+  grandeint n = (grandeint) malloc(sizeof(struct grandeintS));
   n->digitos = inicial();
   /* a convenção de sinal é:
      1 para número não-negativo
@@ -159,7 +159,7 @@ void incrementa(grandeint gi1, grandeint gi2)
 void liberagi(grandeint gi)
 {
   libera(gi->digitos);
-  FREE(gi);
+  free(gi);
 }
 
 grandeint vezes(grandeint gi1, grandeint gi2)

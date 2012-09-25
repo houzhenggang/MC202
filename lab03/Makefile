@@ -1,7 +1,7 @@
 
 objdir = bin
 objs = $(addprefix $(objdir)/, balloc.o grandeint.o lista.o)
-CFLAGS = -O0 -ggdb -Wall # -Werror -ansi -pedantic
+CFLAGS = -O2 -Wall # -Werror -ansi -pedantic
 
 lab03: $(objs) bin/principal.o
 	$(CC) -o $(objdir)/lab03 $(objs) bin/principal.o
