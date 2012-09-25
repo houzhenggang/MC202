@@ -17,63 +17,61 @@ void imprime(int mat[9][9]){
 	return;
 }
 
-int resolve(int mat[9][9], int *i, int *j)
+int resolve(int mat[9][9], int i, int j)
 {
-  int x = 0, possivel[10] = {0};
+  int x = 0, usado[10] = {0};
   do
     {
       do
 	{
-	  if (!mat[*i][*j])
+	  if (!mat[i][j])
 	    {
 	      x = 1;
 	      break;
 	    }
-	  (*j)++;
+	  (j)++;
 	}
-      while ( *j < 9);
+      while ( j < 9);
       if (x)
 	break;
-      *j = 0;
-      (*i)++;
+      j = 0;
+      i++;
     }
-  while ((*i) < 9);
-  if ((*i) == 9)
+  while (i < 9);
+  if (i == 9)
     return 1;
   for (x = 0; x < 9; x++)
     {
-      possivel[mat[*i][x]] = 1;
-      possivel[mat[x][*j]] = 1;
-      /* abandon all hope, ye who enter here */
-      possivel[mat[(*i/3)*3+x/3][(*j/3)*3+x%3]] = 1;
+      /* checa linha */
+      usado[mat[i][x]] = 1;
+      /* checa coluna */
+      usado[mat[x][j]] = 1;
+      /* (checa quadrado 3x3) */
+      usado[mat[i/3*3+x/3][j/3*3+x%3]] = 1;
     }
   for (x = 1; x < 10; x++)
     {
-      if (!possivel[x])
+      if (!usado[x])
 	{
-	  mat[*i][*j] = x;
+	  mat[i][j] = x;
 	  if (resolve(mat, i, j))
 	    return 1;
 	}
     }
+  mat[i][j] = 0;
   return 0;
 }
 
 int sudoku(int mat[9][9])
 {
   int i,j, valor, casas;
-  scanf (" %d", &casas);
-  while (casas > 0)
+  for (scanf (" %d", &casas); casas > 0; casas--)
     {
       scanf(" %d %d %d", &i, &j, &valor);
       mat[i-1][j-1] = valor;
-      casas--;      
     }
-  i = j = 0;  
-  return resolve(mat, &i,&j);
+  return resolve(mat, 0, 0);
 }
-
-
 
 int main()
 {
