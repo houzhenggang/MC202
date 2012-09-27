@@ -1,5 +1,5 @@
 objdir = bin
-CFLAGS = -O2 -ggdb -Wall # -Werror -ansi -pedantic
+CFLAGS = -O0 -ggdb3 -Wall # -Werror -ansi -pedantic
 
 lab04: $(objs) bin/principal.o
 	$(CC) -o $(objdir)/lab04 bin/principal.o

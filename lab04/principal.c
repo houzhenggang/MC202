@@ -32,50 +32,48 @@ void imprime(int mat[9][9]){
 
 int resolve2(int mat[9][9], int whatever_a, int whatever_b)
 {
-  int percorre, pilha[81][12] = {{0}}, pos = 0, max, i, j;
+  short testa, pilha[81][2] = {{0}}, linha[9][10] = {{0}}, coluna[9][10] = {{0}}, quadrado[3][3][10] = {{{0}}}, pos = 0, max, i, j;
   for (i = 0; i < 9; i++)
     {
       for (j = 0; j < 9; j++)
 	{
 	  if (mat[i][j])
-	    continue;
-	  pilha[pos][10] = i;
-	  pilha[pos][11] = j;
-	  pos++;
+	    {
+	      linha[i][mat[i][j]] = 1;
+	      coluna[j][mat[i][j]] = 1;
+	      quadrado[i/3][j/3][mat[i][j]] = 1;
+	    }
+	  else
+	    {
+	      pilha[pos][0] = i;
+	      pilha[pos][1] = j;
+	      pos++;
+	    }
 	}
     }
   max = pos;
   pos = 0;
   while (pos >= 0 && pos < max)
     {
-      i = pilha[pos][10];
-      j = pilha[pos][11];
-      if (!pilha[pos][0])
+      i = pilha[pos][0];
+      j = pilha[pos][1];
+      testa = mat[i][j];
+       if (testa) 
+	  linha[i][mat[i][j]] = coluna[j][mat[i][j]] = quadrado[i/3][j/3][mat[i][j]] = 0;
+      while (testa < 9)
 	{
-	  for (percorre = 0; percorre < 9; percorre++)
+	  testa++;
+	  if (!(linha[i][testa] || coluna[j][testa] || quadrado[i/3][j/3][testa]))
 	    {
-	      pilha[pos][mat[i][percorre]] = 1;
-	      pilha[pos][mat[percorre][j]] = 1;
-	      pilha[pos][mat[i-(i%3)+percorre/3][j-(j%3)+percorre%3]] = 1;
+	      linha[i][testa] = coluna[j][testa] = quadrado[i/3][j/3][testa] = 1;
+	      mat[i][j] = testa;
+	      pos++;	      
+	      goto stack;	      
 	    }
 	}
-      while ( 1 )
-	{
-	  if (!pilha[pos][pilha[pos][0]])
-	    {
-	      pilha[pos][pilha[pos][0]] = 1;
-	      mat[i][j] = pilha[pos++][0];
-	      break;
-	    }
-	  pilha[pos][0]++;
-	  if (pilha[pos][0] >= 10)
-	    {
-	      mat[i][j] = 0;
-	      memset(pilha[pos],0,10*sizeof(int));
-	      pos--;
-	      break;
-	    }
-	}
+      mat[i][j] = 0;      
+      pos--;
+    stack:;
     }
   if (pos == max)
     return 1;
@@ -84,27 +82,22 @@ int resolve2(int mat[9][9], int whatever_a, int whatever_b)
 
 int resolve(int mat[9][9], int i, int j)
 {
-  int percorre = 0, usado[10] = {0};
+  int percorre  = 0 , usado[10] = {0};
   do
     {
       do
 	{
 	  if (!mat[i][j])
-	    {
-	      percorre = 1;
-	      break;
-	    }
+	      goto achou;
 	  j++;
 	}
       while ( j < 9);
-      if (percorre)
-	break;
       j = 0;
       i++;
     }
   while (i < 9);
-  if (i == 9)
-    return 1;
+  return 1;
+ achou:
   for (percorre = 0; percorre < 9; percorre++)
     {
       usado[mat[i][percorre]] = 1;
