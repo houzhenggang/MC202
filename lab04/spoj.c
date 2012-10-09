@@ -24,64 +24,56 @@ void imprime(int mat[9][9]){
   return;
 }
 
-int resolve(int mat[9][9], int i, int j)
+int resolve(int mat[9][9])
 {
-  int percorre = 0, usado[10] = {0};
-  /* loop que procura o próximo dígito a ser determinado */
-  do
+  short testa, pilha[81][2] = {{0}}, linha[9][10] = {{0}}, coluna[9][10] = {{0}}, quadrado[3][3][10] = {{{0}}}, pos = 0, max, i, j;
+  for (i = 0; i < 9; i++)
     {
-      do
+      for (j = 0; j < 9; j++)
 	{
-	  /* achou dígito zerado */
-	  if (!mat[i][j])
+	  if (mat[i][j])
 	    {
-	      /* usa "percorre" como flag pra sair do loop aninhado */
-	      percorre = 1;
-	      break;
+	      linha[i][mat[i][j]] = 1;
+	      coluna[j][mat[i][j]] = 1;
+	      quadrado[i/3][j/3][mat[i][j]] = 1;
 	    }
-	  /* avança coluna */
-	  (j)++;
+	  else
+	    {
+	      pilha[pos][0] = i;
+	      pilha[pos][1] = j;
+	      pos++;
+	    }
 	}
-      while ( j < 9);
-      if (percorre)
-	break;
-      /* reseta coluna e avança linha */
-      j = 0;
-      i++;
     }
-  while (i < 9);
-  /* se chegamos ao fim do tabuleiro (caso básico), uma solução foi encontrada */
-  if (i == 9)
-    return 1;
-  /* elimina os dígitos já usados na linha, coluna e quadrado 3x3 */
-  for (percorre = 0; percorre < 9; percorre++)
+  max = pos;
+  pos = 0;
+  while (pos >= 0 && pos < max)
     {
-      /* percorre linha */
-      usado[mat[i][percorre]] = 1;
-      /* percorre coluna */
-      usado[mat[percorre][j]] = 1;
-      /* percorre quadrado 3x3 */
-      usado[mat[i/3*3+percorre/3][j/3*3+percorre%3]] = 1;
-    }
-  /* agora usado[x] == 0 se x é um dígito válido para essa posição */
-  /* loop testa cada um dos dígitos e chama a recursão para o restante do tabuleiro */
-  for (percorre = 1; percorre < 10; percorre++)
-    {
-      if (!usado[percorre])
+      i = pilha[pos][0];
+      j = pilha[pos][1];
+      testa = mat[i][j];
+       if (testa) 
+	  linha[i][mat[i][j]] = coluna[j][mat[i][j]] = quadrado[i/3][j/3][mat[i][j]] = 0;
+      while (testa < 9)
 	{
-	  /* põe o dígito na posição */
-	  mat[i][j] = percorre;
-	  /* chama a recursão para o restante do tabuleiro */
-	  if (resolve(mat, i, j))
-	    /* se é solução retorna imediatamente */
-	    return 1;
+	  testa++;
+	  if (!(linha[i][testa] || coluna[j][testa] || quadrado[i/3][j/3][testa]))
+	    {
+	      linha[i][testa] = coluna[j][testa] = quadrado[i/3][j/3][testa] = 1;
+	      mat[i][j] = testa;
+	      pos++;	      
+	      goto stack;	      
+	    }
 	}
+      mat[i][j] = 0;      
+      pos--;
+    stack:;
     }
-  /* se chegamos aqui, não há solução para o estado atual do tabuleiro */
-  /* a posição atual do tabuleiro volta ao valor inicial e retorna falha */
-  mat[i][j] = 0;
+  if (pos == max)
+    return 1;
   return 0;
 }
+
 
 int main()
 {
@@ -94,7 +86,7 @@ int main()
 	    scanf(" %1d",&v);
 	    mat[x][y] = v;
 	  }
-      resolve(mat, 0, 0);
+      resolve(mat);
       imprime(mat);
     }
   return 0;

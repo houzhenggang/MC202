@@ -14,6 +14,7 @@ Resolve um tabuleiro de sudoku, caso exista solução.
 
 
 /*Funcao que imprime a matriz 9x9 que armazena o jogo de Sudoku (opcionalmente a matriz pode ser global e nao passada por parametro)*/
+
 void imprime(int mat[9][9]){
 	int i, j;
 	for(i=0; i<9; i++){
@@ -30,9 +31,10 @@ void imprime(int mat[9][9]){
 	return;
 }
 
-int resolve2(int mat[9][9], int whatever_a, int whatever_b)
+int resolve2(int mat[9][9], int whatevera, int whateverb)
 {
-  short testa, pilha[81][2] = {{0}}, linha[9][10] = {{0}}, coluna[9][10] = {{0}}, quadrado[3][3][10] = {{{0}}}, pos = 0, max, i, j;
+  short testa, pos = 0, max, i, j;
+  short pilha[81][2] = {{0}}, linha[9][10] = {{0}}, coluna[9][10] = {{0}}, quadrado[3][3][10] = {{{0}}};
   for (i = 0; i < 9; i++)
     {
       for (j = 0; j < 9; j++)
@@ -58,8 +60,8 @@ int resolve2(int mat[9][9], int whatever_a, int whatever_b)
       i = pilha[pos][0];
       j = pilha[pos][1];
       testa = mat[i][j];
-       if (testa) 
-	  linha[i][mat[i][j]] = coluna[j][mat[i][j]] = quadrado[i/3][j/3][mat[i][j]] = 0;
+      if (testa)   
+	linha[i][testa] = coluna[j][testa] = quadrado[i/3][j/3][testa] = 0;
       while (testa < 9)
 	{
 	  testa++;
@@ -68,21 +70,19 @@ int resolve2(int mat[9][9], int whatever_a, int whatever_b)
 	      linha[i][testa] = coluna[j][testa] = quadrado[i/3][j/3][testa] = 1;
 	      mat[i][j] = testa;
 	      pos++;	      
-	      goto stack;	      
+	      goto stack; /* I used a bad command and I should feel bad. */
 	    }
 	}
       mat[i][j] = 0;      
       pos--;
     stack:;
     }
-  if (pos == max)
-    return 1;
-  return 0;
+  return pos == max;
 }
 
 int resolve(int mat[9][9], int i, int j)
 {
-  int percorre  = 0 , usado[10] = {0};
+  int percorre = 0 , usado[10] = {0};
   do
     {
       do
