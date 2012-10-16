@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include "datastruct.h"
-#include "balloc.h"
-/* #define MALLOC malloc */
-/* #define FREE free */
+/* #include "balloc.h" */
 
 typedef struct Conj 
 {
@@ -21,9 +19,9 @@ typedef struct Conjcob
 conjcob * iniConjCob (int universo)
 {
   int i;
-  conjcob * inst = MALLOC(sizeof(conjcob));
+  conjcob * inst = malloc(sizeof(conjcob));
   inst->conjs = NULL;
-  inst->universo = MALLOC(sizeof(conj));
+  inst->universo = malloc(sizeof(conj));
   inst->universo->arvore = NULL;
   for (i = 1;  i <= universo; i++)
     insere (&(inst->universo->arvore), i);
@@ -32,7 +30,7 @@ conjcob * iniConjCob (int universo)
 
 void addConj( conjcob * prob, int * itens, int card)
 {
-  conj * novo = MALLOC (sizeof(conj));
+  conj * novo = malloc (sizeof(conj));
   novo->id = prob->conjs != NULL ? prob->conjs->id + 1 : 1;
   novo->prox = prob->conjs;
   novo->arvore = NULL;

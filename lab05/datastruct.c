@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include "balloc.h"
+/* #include "balloc.h" */
 
-/* #define MALLOC malloc */
-/* #define FREE free */
+/* #define malloc malloc */
+/* #define free free */
 
 typedef struct NoArv 
 {
@@ -14,13 +14,8 @@ typedef struct NoArv
 void rotacaoDir( no * pai, no ** refAvo, no * avo)
 {
   no * filho = pai->esq;
-  if (refAvo != NULL)
-    {
-      *refAvo = filho;
-      filho->pai = avo;
-    }
-  else
-    filho->pai = NULL;
+  *refAvo = filho;
+  filho->pai = avo;
   pai->esq = filho->dir;
   if (filho->dir != NULL)
     filho->dir->pai = pai;
@@ -31,13 +26,8 @@ void rotacaoDir( no * pai, no ** refAvo, no * avo)
 void rotacaoEsq( no * pai, no ** refAvo, no * avo)
 {
   no * filho = pai->dir;
-  if (avo)
-    {
-      *refAvo = filho;
-      filho->pai = avo;
-    }
-  else
-    filho->pai = NULL;
+  *refAvo = filho;
+  filho->pai = avo;
   pai->dir = filho->esq;
   if (filho->esq != NULL)
   filho->esq->pai = pai;
@@ -63,13 +53,15 @@ void afunila ( no * novo, no ** arvore)
 		  rotacaoDir(novo->pai->pai, arvore, NULL);
 		  rotacaoDir(novo->pai, arvore, NULL);
 		}
-	      else 
+	      else if (novo->pai->pai->pai->esq == novo->pai->pai)
 		{
-		  if (novo->pai->pai->pai->esq == novo->pai->pai)
-		    rotacaoDir(novo->pai->pai, &(novo->pai->pai->pai->esq), novo->pai->pai->pai);
-		  else
-		    rotacaoDir(novo->pai->pai, &(novo->pai->pai->pai->dir), novo->pai->pai->pai);
-		  rotacaoDir(novo->pai, &(novo->pai->pai->esq), novo->pai->pai);
+		  rotacaoDir(novo->pai->pai, &(novo->pai->pai->pai->esq), novo->pai->pai->pai);
+		  rotacaoDir(novo->pai, &(novo->pai->pai->esq), novo->pai->pai);		      
+		}
+	      else
+		{
+		  rotacaoDir(novo->pai->pai, &(novo->pai->pai->pai->dir), novo->pai->pai->pai);
+		  rotacaoDir(novo->pai, &(novo->pai->pai->dir), novo->pai->pai);
 		}
 	    }
 	  /* caso heterogêneo esquerdo */
@@ -97,14 +89,17 @@ void afunila ( no * novo, no ** arvore)
 		  rotacaoEsq(novo->pai->pai, arvore, NULL);
 		  rotacaoEsq(novo->pai, arvore, NULL);
 		}
-	      else 
+	      else if (novo->pai->pai->pai->dir == novo->pai->pai)
 		{
-		  if (novo->pai->pai->pai->dir == novo->pai->pai)
-		    rotacaoEsq(novo->pai->pai, &(novo->pai->pai->pai->dir), novo->pai->pai->pai);
-		  else
-		    rotacaoEsq(novo->pai->pai, &(novo->pai->pai->pai->esq), novo->pai->pai->pai);
+		  rotacaoEsq(novo->pai->pai, &(novo->pai->pai->pai->dir), novo->pai->pai->pai);
 		  rotacaoEsq(novo->pai, &(novo->pai->pai->dir), novo->pai->pai);
 		}
+	      else
+		{
+		  rotacaoEsq(novo->pai->pai, &(novo->pai->pai->pai->esq), novo->pai->pai->pai);
+		  rotacaoEsq(novo->pai, &(novo->pai->pai->esq), novo->pai->pai);
+		}
+
 	    }
 	  else
 	    {
@@ -139,7 +134,7 @@ no * busca (no * arvore, int dado )
 void insere ( no ** arvore, int dado )
 {
   no * novo;
-  novo = MALLOC(sizeof(no));
+  novo = malloc(sizeof(no));
   novo->dado = dado;
   novo->dir = novo->esq = NULL;
   if ((novo->pai = busca(*arvore, dado)) == NULL)
@@ -178,7 +173,7 @@ void retira (no ** arvore, int dado)
 	}
       else
 	*arvore = NULL;
-      FREE(chave);
+      free(chave);
     }
   else if (chave->esq == NULL)
     {
@@ -192,7 +187,7 @@ void retira (no ** arvore, int dado)
 	}
       else
 	*arvore = chave->dir;
-      FREE(chave);      
+      free(chave);      
     }
   else if (chave->dir == NULL)
     {
@@ -206,7 +201,7 @@ void retira (no ** arvore, int dado)
 	}
       else
 	*arvore = chave->esq;
-      FREE(chave);      
+      free(chave);      
     }
   else
     {
