@@ -8,4 +8,7 @@ conjcob * iniConjCob (int );
 void addConj (conjcob *, int *, int);
 
 int cobre (conjcob *);
+
+void delConjCob (conjcob *);
+
 #endif

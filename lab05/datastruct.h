@@ -3,12 +3,14 @@
 
 typedef struct NoArv no;
 
-void insere (no **, int);
+int insere (no **, int);
 
-void retira (no **, int);
+int retira (no **, int);
 
 int conta (no *);
 
 int raiz (no *);
+
+void deleta (no *);
 
 #endif

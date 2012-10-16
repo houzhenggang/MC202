@@ -125,14 +125,13 @@ no * busca (no * arvore, int dado )
       if (dado < arvore->dado && arvore->esq != NULL)
 	arvore = arvore->esq;
       else if (dado > arvore->dado && arvore->dir != NULL)
-	arvore = arvore->dir;
+	arvore = arvore->dir;      
       else
 	return arvore;
     }
 }
 
-
-void insere ( no ** arvore, int dado )
+int insere ( no ** arvore, int dado )
 {
   no * novo;
   novo = malloc(sizeof(no));
@@ -141,25 +140,32 @@ void insere ( no ** arvore, int dado )
   if ((novo->pai = busca(*arvore, dado)) == NULL)
     {
       *arvore = novo;
-      return;
+      return 1;
+    }
+  if (dado == novo->pai->dado)
+    {
+      afunila(novo->pai, arvore);      
+      free(novo);
+      return 0;
     }
   if (novo->dado < novo->pai->dado)
     novo->pai->esq = novo;
   else
     novo->pai->dir = novo;
-  afunila (novo, arvore);  
+  afunila (novo, arvore);
+  return 1;  
 }
 
-void retira (no ** arvore, int dado)
+int retira (no ** arvore, int dado)
 {
   no * chave = busca (*arvore, dado), *pai;
   int tmp;  
   if (chave == NULL)
-    return;
+    return 0;
   if (chave->dado != dado)
     {
       afunila(chave, arvore);
-      return;
+      return 0;
     }
   pai = chave->pai;
   if (chave->dir == NULL && chave->esq == NULL) /* é uma folha */
@@ -219,6 +225,7 @@ void retira (no ** arvore, int dado)
       retira (arvore, tmp);
       chave->dado = tmp;
     }
+  return 1;  
 }
 
 int conta (no * arvore)
@@ -233,4 +240,14 @@ int raiz (no * arvore)
   if (arvore == NULL)
     return 0;
   return arvore->dado;
+}
+
+void deleta (no * arvore)
+{
+  if (arvore == NULL)
+    return;
+  deleta(arvore->dir);
+  deleta(arvore->esq);
+  free(arvore);
+  return;
 }

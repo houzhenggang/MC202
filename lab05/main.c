@@ -42,6 +42,7 @@ int main ()
     printf (" :(\n");
   else
     printf (" :)\n");
+  delConjCob(problema);  
   return 0;  
 }
 

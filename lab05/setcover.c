@@ -5,7 +5,8 @@
 typedef struct Conj 
 {
   no * arvore;
-  int id;  
+  int id;
+  int cardinalidade;  
   struct Conj * prox;
   
 } conj;
@@ -15,42 +16,45 @@ typedef struct Conjcob
   conj * conjs;
   conj * universo;
 } conjcob;
+
   
 conjcob * iniConjCob (int universo)
 {
   int i;
-  conjcob * inst = malloc(sizeof(conjcob));
-  inst->conjs = NULL;
-  inst->universo = malloc(sizeof(conj));
-  inst->universo->arvore = NULL;
+  conjcob * problema = malloc(sizeof(conjcob));
+  problema->conjs = NULL;
+  problema->universo = malloc(sizeof(conj));
+  problema->universo->arvore = NULL;
+  problema->universo->prox = NULL;
+  problema->universo->cardinalidade = 0;  
   for (i = 1;  i <= universo; i++)
-    insere (&(inst->universo->arvore), i);
-  return inst;  
+    problema->universo->cardinalidade += insere (&(problema->universo->arvore), i);
+  return problema;  
 }
 
-void addConj( conjcob * prob, int * itens, int card)
+void addConj( conjcob * problema, int * itens, int card)
 {
   conj * novo = malloc (sizeof(conj));
-  novo->id = prob->conjs != NULL ? prob->conjs->id + 1 : 1;
-  novo->prox = prob->conjs;
+  novo->id = 1 + (problema->conjs != NULL ? problema->conjs->id : 0 );
+  novo->prox = problema->conjs;
   novo->arvore = NULL;
-  prob->conjs = novo;  
+  novo->cardinalidade = 0;  
+  problema->conjs = novo;
   while (card-- > 0)
-    insere (&(novo->arvore), itens[card]);
+    novo->cardinalidade += insere (&(novo->arvore), itens[card]);
 }
 
 int cobre ( conjcob * prob)
 {
-  int max = 0, card, elemento;
+  int max = 0, elemento;
   conj * atual = NULL, * anda;
   if (prob->universo->arvore == NULL)
     return 0;  
   for (anda = prob->conjs; anda != NULL; anda = anda->prox)
     {
-      card = conta(anda->arvore);
-      if (card > max)
+      if (anda->cardinalidade > max)
 	{
-	  max = card;
+	  max = anda->cardinalidade;
 	  atual = anda;
 	}
     }
@@ -60,8 +64,27 @@ int cobre ( conjcob * prob)
     {
       elemento = raiz(atual->arvore);
       for (anda = prob->conjs; anda != NULL; anda = anda->prox)
-	retira (&(anda->arvore), elemento);
-      retira (&(prob->universo->arvore), elemento);
+	anda->cardinalidade -= retira (&(anda->arvore), elemento);
+      prob->universo->cardinalidade -= retira (&(prob->universo->arvore), elemento);
     }
   return atual->id;  
 }
+
+void delConj( conj * conjunto)
+{
+  if (conjunto == NULL)
+    return;
+  delConj(conjunto->prox);
+  deleta (conjunto->arvore);
+  free(conjunto);
+}
+
+
+void delConjCob ( conjcob * problema )
+{
+  delConj (problema->conjs);
+  delConj (problema->universo);
+  free(problema);  
+}
+
+  
