@@ -5,46 +5,43 @@
 
 int main ()
 {
-  int i, conjuntos, retorno = 1, * entrada, tam;
+  int i, retorno = 1, * entrada, tam;
   conjcob * problema;
   char leitura[10];  
   scanf (" %d", &i);
   problema = iniConjCob(i);
   entrada = malloc (sizeof(int)*i);
-  scanf (" %d", &conjuntos);      
-  i = tam = 0;	  
-  while (i <= conjuntos)
+  scanf (" %d", &i);      
+  tam = 0;	  
+  while (i >= 0)
     {
-      if (scanf("%s", leitura) == EOF || !strcmp(leitura, "s"))
+      if (scanf(" %s", leitura) == EOF || !strcmp(leitura, "s"))
 	{
 	  if (tam)
 	    addConj(problema, entrada, tam);
-	  i++;
+	  i--;
 	  tam = 0;
 	}
       else
 	entrada[tam++] = atoi (leitura);
     }
   free (entrada);
-  entrada = malloc(sizeof(int)*conjuntos);
-  conjuntos = 0;      
+  i = 0;  
   while (1)
     {
       retorno = cobre (problema);
-      if (retorno < 0)
+      if (retorno <= 0)
 	break;
-      entrada[conjuntos++] = retorno;
+      if (!i)
+	i=1;
+      else
+	printf (" U ");
+      printf("S%d", retorno);
     }
-  printf ("%d: ", conjuntos);
-  if (conjuntos)
-    printf("S%d", entrada[0]);
-  for (i = 1; i < conjuntos; i++)
-    printf (" U S%d", entrada[i]);
   if (retorno)
     printf (" :(\n");
   else
     printf (" :)\n");
-  free(entrada);
   return 0;  
 }
 

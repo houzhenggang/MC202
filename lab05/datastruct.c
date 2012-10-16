@@ -37,6 +37,7 @@ void rotacaoEsq( no * pai, no ** refAvo, no * avo)
 
 void afunila ( no * novo, no ** arvore)
 {
+  /* return; /\* hehehe *\/ */
   while (novo->pai != NULL)
     {
       /* se for filho esquerdo */
@@ -161,7 +162,7 @@ void retira (no ** arvore, int dado)
       return;
     }
   pai = chave->pai;
-  if (chave->dir == NULL && chave->esq == NULL)
+  if (chave->dir == NULL && chave->esq == NULL) /* é uma folha */
     {
       if (pai != NULL)
 	{
@@ -183,10 +184,14 @@ void retira (no ** arvore, int dado)
 	    pai->dir = chave->dir;
 	  else
 	    pai->esq = chave->dir;
+	  chave->dir->pai = pai;
 	  afunila(pai,arvore);	  
 	}
       else
-	*arvore = chave->dir;
+	{
+	  *arvore = chave->dir;
+	  chave->dir->pai = NULL;
+	}
       free(chave);      
     }
   else if (chave->dir == NULL)
@@ -197,10 +202,14 @@ void retira (no ** arvore, int dado)
 	    pai->dir = chave->esq;
 	  else
 	    pai->esq = chave->esq;
+	  chave->esq->pai = pai;	  
 	  afunila(pai, arvore);	  
 	}
       else
-	*arvore = chave->esq;
+	{
+	  *arvore = chave->esq;
+	  chave->esq->pai = NULL;
+	}      
       free(chave);      
     }
   else
