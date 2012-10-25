@@ -1,6 +1,6 @@
 
 objdir = bin
-objs = $(addprefix $(objdir)/, balloc.o setcover.o datastruct.o)
+objs = $(addprefix $(objdir)/, balloc.o setcover.o datastruct.o splay.o)
 CFLAGS = -O0 -ggdb3 -Wall # -Werror -ansi -pedantic
 
 lab05: $(objs) bin/main.o

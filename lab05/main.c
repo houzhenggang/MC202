@@ -11,7 +11,8 @@ Resolve um problema de cobertura de conjuntos.
 
 #include "setcover.h"
 #include <stdio.h>
-#include <stdlib.h>
+/* #include <stdlib.h> */
+#include "balloc.h"
 #include <string.h>
 
 int main ()
@@ -23,7 +24,7 @@ int main ()
   /* inicializa com tamanho do universo */
   problema = iniConjCob(i);
   /* vetor para guardar os elementos do conjunto da entrada */
-  entrada = malloc (sizeof(int)*i);
+  entrada = MALLOC (sizeof(int)*i);
   scanf (" %d", &i);      
   tam = 0;
   /* retorno é flag para não armazenar um conjunto vazio no primeiro s */
@@ -44,7 +45,7 @@ int main ()
 	/* armazena entrada num vetor dinâmico */
 	entrada[tam++] = atoi (leitura);
     }
-  free (entrada);
+  FREE (entrada);
   /* i é flag para não imprimir 'U' antes do primeiro conjunto */
   i = 0;
   while (1)
@@ -68,6 +69,8 @@ int main ()
     printf (" :)\n");
   /* libera memória */
   delConjCob(problema);  
+  bapply(bprint);
+  
   return 0;  
 }
 

@@ -9,7 +9,9 @@ datastruct.c
 Implementa uma árvore binária balanceada com afunilamento.
 *******************************************************************************/
 
-#include <stdlib.h>
+/* #include <stdlib.h> */
+#include "balloc.h"
+
 
 typedef struct NoArv 
 {
@@ -153,7 +155,7 @@ no * busca (no * arvore, int dado )
 int insere ( no ** arvore, int dado )
 {
   no * novo;
-  novo = malloc(sizeof(no));
+  novo = MALLOC(sizeof(no));
   novo->dado = dado;
   novo->dir = novo->esq = NULL;
   /* caso de árvore vazia */
@@ -166,7 +168,7 @@ int insere ( no ** arvore, int dado )
   if (dado == novo->pai->dado)
     {
       afunila(novo->pai, arvore);      
-      free(novo);
+      FREE(novo);
       return 0;
     }
   /* insere o nó do lado certo */
@@ -205,7 +207,7 @@ int retira (no ** arvore, int dado)
 	}
       else
 	*arvore = NULL;
-      free(chave);
+      FREE(chave);
     }
   /* só tem filho direito */
   else if (chave->esq == NULL)
@@ -230,7 +232,7 @@ int retira (no ** arvore, int dado)
 	  chave->dir->pai = NULL;
 	  /* não há pai para afunilar */
 	}
-      free(chave); /* libera a memória */
+      FREE(chave); /* libera a memória */
     }
   /* só tem filho esquerdo, igual ao de cima porém esquerda <-> direita */
   else if (chave->dir == NULL)
@@ -249,7 +251,7 @@ int retira (no ** arvore, int dado)
 	  *arvore = chave->esq;
 	  chave->esq->pai = NULL;
 	}      
-      free(chave);      
+      FREE(chave);      
     }
   else
     /* nó tem duas subárvores */
@@ -290,6 +292,6 @@ void deleta (no * arvore)
     return;
   deleta(arvore->dir);
   deleta(arvore->esq);
-  free(arvore);
+  FREE(arvore);
   return;
 }

@@ -9,7 +9,8 @@ setcover.c
 Funções que implementam a cobertura de conjuntos.
 *******************************************************************************/
 
-#include <stdlib.h> 
+/* #include <stdlib.h>  */
+#include "balloc.h"
 #include "datastruct.h"
 
 /* estrutura que guarda cada conjunto, em forma de lista ligada */
@@ -32,10 +33,10 @@ typedef struct Conjcob
 conjcob * iniConjCob (int universo)
 {
   int i;
-  conjcob * problema = malloc(sizeof(conjcob));
+  conjcob * problema = MALLOC(sizeof(conjcob));
   problema->conjs = NULL;
   /* inicializa conjunto universo */
-  problema->universo = malloc(sizeof(conj));
+  problema->universo = MALLOC(sizeof(conj));
   problema->universo->arvore = NULL;
   problema->universo->prox = NULL;
   problema->universo->cardinalidade = 0;  
@@ -47,7 +48,7 @@ conjcob * iniConjCob (int universo)
 
 void addConj( conjcob * problema, int * itens, int card)
 {
-  conj * novo = malloc (sizeof(conj));
+  conj * novo = MALLOC (sizeof(conj));
   /* cresce id do conjunto */
   novo->id = 1 + (problema->conjs != NULL ? problema->conjs->id : 0 );
   novo->prox = problema->conjs;
@@ -101,7 +102,7 @@ void delConj( conj * conjunto)
   delConj(conjunto->prox);
   /* deleta árvore */
   deleta (conjunto->arvore);
-  free(conjunto);
+  FREE(conjunto);
 }
 
 void delConjCob ( conjcob * problema )
@@ -109,7 +110,7 @@ void delConjCob ( conjcob * problema )
   /* deleta conjuntos */
   delConj (problema->conjs);
   delConj (problema->universo);
-  free(problema);  
+  FREE(problema);  
 }
 
   
