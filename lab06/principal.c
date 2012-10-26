@@ -15,7 +15,7 @@ void sobe ( int no )
 {
   int pai = (no/2-1)/2*2+no%2; /* checar se funciona! */
   cliente temp = heap[no];
-  while (no > 0 && (no % 2 ? heap[pai].dinheiro < temp.dinheiro : heap[pai].dinheiro > temp.dinheiro))
+  while (no > no%2 && (no % 2 ? heap[pai].dinheiro < temp.dinheiro : heap[pai].dinheiro > temp.dinheiro))
     {
       heap[no] = heap[pai];
       no = pai;
@@ -26,12 +26,11 @@ void sobe ( int no )
 
 void desce (int no)
 {
-  int filho = no/2*4+2+no%2;
+  int filho =(no/2*2+1)*2+no%2;
   cliente temp = heap[no];
-  while (filho < clientes)
+  while (filho < clientes/2*2 + no%2)
     {
-      
-      if (filho + 2 < clientes && (no % 2 ? heap[filho].dinheiro < heap[filho+2].dinheiro : heap[filho].dinheiro > heap[filho+2].dinheiro))
+      if (filho + 2 < clientes/2*2 + no%2 && (no % 2 ? heap[filho].dinheiro < heap[filho+2].dinheiro : heap[filho].dinheiro > heap[filho+2].dinheiro))
 	filho += 2;
       if (no % 2 ? temp.dinheiro < heap[filho].dinheiro : temp.dinheiro > heap[filho].dinheiro )
 	{
@@ -47,18 +46,44 @@ void desce (int no)
 
 int insere( cliente novo )
 {
+  int pai;  
   if (clientes == MAXCLIENT)
     return -1;  
-  if (clientes % 2 && novo.dinheiro < heap[clientes-1].dinheiro)
+  if (clientes % 2)
     {
-      heap[clientes] = heap[clientes-1];
-      heap[clientes++ - 1] = novo;
+      if (novo.dinheiro < heap[clientes-1].dinheiro)
+	{
+	  heap[clientes] = heap[clientes-1];
+	  heap[clientes-1] = novo;
+	  sobe(++clientes-1);
+	}
+      else
+	{
+	  heap[clientes++] = novo;
+	  sobe(clientes-1);
+	}
     }
   else
-    heap[clientes++] = novo;
-  if (!(clientes%2))
-    sobe( clientes-1 );
-  sobe( clientes );
+    {
+      pai = ((clientes)/2-1)/2*2;
+      if (pai < clientes && novo.dinheiro < heap[pai].dinheiro)
+	{
+	  heap[clientes++] = heap[pai];
+	  heap[pai] = novo;
+	  sobe(pai);
+	}
+      else if (pai+1 < clientes && novo.dinheiro > heap[pai+1].dinheiro)
+	{
+	  heap[clientes++] = heap[pai+1];
+	  heap[pai+1] = novo;
+	  sobe(pai+1);
+	}
+      else
+	/* { */
+	  heap[clientes++] = novo;
+	  /* sobe(clientes-1); */
+	/* } */
+    }
   return 0;
 }
 
@@ -69,24 +94,26 @@ cliente pegaMin (void)
 
 cliente pegaMax (void)
 {
-  if (clientes == 1)
-    return heap[0];
-  return heap[1];
+  return heap[ clientes == 1 ? 0 : 1];
 }
 
 void removeMin (void)
 {
-  heap[0] = heap[clientes/2*2-1];
-  if (!(clientes%2))
-    heap[clientes-2] = heap[clientes-1];
-  clientes--;
+  if (clientes < 3)
+    heap[0] = heap[1];
+  else  
+    heap[0] = heap[(clientes-1)/2*2];
+  clientes--;  
   desce (0);
 }
 
-
 void removeMax (void)
 {
-  heap[1] = heap[--clientes];
+  clientes--;
+  if (clientes == 2)
+      heap[0] = heap[1];
+  else
+    heap[1] = heap[clientes];
   desce(1);
 }
 
@@ -111,6 +138,7 @@ int main()
 	      break;
 	    }
 	  entrada = pegaMin();
+	  removeMin();	  
 	  printf ("Joao vai atender %s (%d)\n", entrada.nome, entrada.dinheiro);
 	  break;
 	case 'M':
@@ -120,6 +148,7 @@ int main()
 	      break;
 	    }
 	  entrada = pegaMax();
+	  removeMax();	  
 	  printf ("Maria vai atender %s (%d)\n", entrada.nome, entrada.dinheiro);
 	  break;
 	case '#':
@@ -130,6 +159,4 @@ int main()
     }
   return 0;
 }
-
-
 
