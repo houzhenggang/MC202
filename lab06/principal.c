@@ -24,9 +24,6 @@ void sobe ( int no )
   heap[no] = temp;
 }
 
-/* if (filho + 2 < clientes && (no % 2 ? heap[filho].dinheiro < heap[filho+2].dinheiro : heap[filho].dinheiro > heap[filho+2].dinheiro)) */
-/*   filho += 2; */
-
 void desce (int no)
 {
   int filho = no/2;  
@@ -58,7 +55,7 @@ void desce (int no)
 	{
 	  heap[no] = heap[filho];
 	  no = filho;
-	  if (no%2 ? heap[no-1].dinheiro > heap[no].dinheiro : no+1 < clientes && heap[no].dinheiro > heap[no+1].dinheiro )
+	  if (no%2 ? heap[no-1].dinheiro > temp.dinheiro : no+1 < clientes && temp.dinheiro > heap[no+1].dinheiro )
 	    {
 	      heap[no] = heap[no+(no%2 ? -1 : 1)];
 	      heap[no+(no%2 ? -1 : 1)] = temp;
@@ -135,9 +132,7 @@ void removeMin (void)
 void removeMax (void)
 {
   clientes--;
-  if (clientes < 2)
-      heap[0] = heap[1];
-  else
+  if (clientes > 1)
     {
       heap[1] = heap[clientes];
       desce(1);
@@ -184,6 +179,9 @@ int main()
 	  break;
 	default:;
 	}
+      for (c = 0; c < clientes; c++)
+	fprintf (stderr, "%d\n", heap[c].dinheiro);
+      fprintf(stderr, "\n");
     }
   return 0;
 }
