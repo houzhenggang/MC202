@@ -15,7 +15,7 @@ void sobe ( int no )
 {
   int pai = (no/2-1)/2*2+no%2; /* checar se funciona! */
   cliente temp = heap[no];
-  while (no > no%2 && (no % 2 ? heap[pai].dinheiro < temp.dinheiro : heap[pai].dinheiro > temp.dinheiro))
+  while (no > 1 && (no % 2 ? heap[pai].dinheiro < temp.dinheiro : heap[pai].dinheiro > temp.dinheiro))
     {
       heap[no] = heap[pai];
       no = pai;
@@ -24,19 +24,46 @@ void sobe ( int no )
   heap[no] = temp;
 }
 
+/* if (filho + 2 < clientes && (no % 2 ? heap[filho].dinheiro < heap[filho+2].dinheiro : heap[filho].dinheiro > heap[filho+2].dinheiro)) */
+/*   filho += 2; */
+
 void desce (int no)
 {
-  int filho =(no/2*2+1)*2+no%2;
+  int filho = no/2;  
   cliente temp = heap[no];
-  while (filho < clientes/2*2 + no%2)
+  while ((filho = no/2*4+2) < clientes)
     {
-      if (filho + 2 < clientes/2*2 + no%2 && (no % 2 ? heap[filho].dinheiro < heap[filho+2].dinheiro : heap[filho].dinheiro > heap[filho+2].dinheiro))
-	filho += 2;
+      switch (no%2)
+	{
+	case 0:
+	  if (filho + 2 < clientes && heap[filho].dinheiro > heap[filho+2].dinheiro)
+	    filho += 2;
+	  break;
+	case 1:
+	  if (filho + 1 < clientes)
+	    filho++;
+	  else
+	    break;
+	  if (filho + 2 < clientes) 
+	    { 
+	      if( heap[filho].dinheiro < heap[filho+2].dinheiro)
+		filho += 2;
+	      else
+		break;
+	    }
+	  else if (filho + 1 < clientes && heap[filho].dinheiro < heap[filho+1].dinheiro)
+	    filho += 1;
+	}
       if (no % 2 ? temp.dinheiro < heap[filho].dinheiro : temp.dinheiro > heap[filho].dinheiro )
 	{
 	  heap[no] = heap[filho];
 	  no = filho;
-	  filho = no/2*4+2+no%2;
+	  if (no%2 ? heap[no-1].dinheiro > heap[no].dinheiro : no+1 < clientes && heap[no].dinheiro > heap[no+1].dinheiro )
+	    {
+	      heap[no] = heap[no+(no%2 ? -1 : 1)];
+	      heap[no+(no%2 ? -1 : 1)] = temp;
+	      temp = heap[no];
+	    }
 	}
       else
 	break;
@@ -55,7 +82,7 @@ int insere( cliente novo )
 	{
 	  heap[clientes] = heap[clientes-1];
 	  heap[clientes-1] = novo;
-	  sobe(++clientes-1);
+	  sobe(++clientes-2);
 	}
       else
 	{
@@ -66,23 +93,23 @@ int insere( cliente novo )
   else
     {
       pai = ((clientes)/2-1)/2*2;
-      if (pai < clientes && novo.dinheiro < heap[pai].dinheiro)
+      if (clientes && novo.dinheiro < heap[pai].dinheiro)
 	{
 	  heap[clientes++] = heap[pai];
 	  heap[pai] = novo;
 	  sobe(pai);
 	}
-      else if (pai+1 < clientes && novo.dinheiro > heap[pai+1].dinheiro)
+      else if ( clientes && novo.dinheiro > heap[pai+1].dinheiro)
 	{
 	  heap[clientes++] = heap[pai+1];
 	  heap[pai+1] = novo;
 	  sobe(pai+1);
 	}
       else
-	/* { */
+	 { 
 	  heap[clientes++] = novo;
-	  /* sobe(clientes-1); */
-	/* } */
+	  sobe(clientes-1); 
+	 } 
     }
   return 0;
 }
@@ -94,27 +121,28 @@ cliente pegaMin (void)
 
 cliente pegaMax (void)
 {
-  return heap[ clientes == 1 ? 0 : 1];
+  return heap[clientes != 1];
 }
 
 void removeMin (void)
 {
-  if (clientes < 3)
-    heap[0] = heap[1];
-  else  
-    heap[0] = heap[(clientes-1)/2*2];
   clientes--;  
+  heap[0] = heap[clientes/2*2];
+  heap[clientes/2*2] = heap[clientes/2*2+1];
   desce (0);
 }
 
 void removeMax (void)
 {
   clientes--;
-  if (clientes == 2)
+  if (clientes < 2)
       heap[0] = heap[1];
   else
-    heap[1] = heap[clientes];
-  desce(1);
+    {
+      heap[1] = heap[clientes];
+      desce(1);
+    }
+  
 }
 
 int main()
