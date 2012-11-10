@@ -1,3 +1,15 @@
+/*******************************************************************************
+Pedro Emílio Machado de Brito - RA 137264
+10/11/2012 - MC202 turma B
+
+lab07 - Árvore B
+
+arvoreb.c
+
+Implementa inserção, busca e impressão com árvore B.
+*******************************************************************************/
+
+
 #include "arvoreb.h"
 #include <stdlib.h>
 #include <string.h>
@@ -43,7 +55,8 @@ arvoreb * criaArvoreB (int ordemMinima)
 
 int buscaBinaria ( aluno * vetor, int tamanho, int ra)
 {
-  /* tem a propriedade muito útil de retornar índice do filho certo ou da chave certa se estiver lá */
+  /* tem a propriedade muito útil de retornar índice ou do filho certo para descer,
+     ou da chave certa se estiver lá */
   int esq = 0;
   while (tamanho > 0)
     {
@@ -66,7 +79,7 @@ aluno * consultaRA (arvoreb * arvore, int ra)
 	/* encontrou o registro */
 	return atual->chave + indice;
       if (!atual->folha)
-	/* desce para a folha certa */
+	/* desce para o filho certo */
 	atual = (atual->filho)[indice];
       else
 	/* não achou */
@@ -74,77 +87,88 @@ aluno * consultaRA (arvoreb * arvore, int ra)
     }
 }
 
-promocao insereRecursivo (pagina * atual, aluno novo, int ordem)
+static int ordem;
+
+promocao * insereRecursivo (pagina * atual, aluno * novo)
 {
   int indice;
-  promocao promo, propaga;
-
+  promocao * promo, * propaga = NULL;
   if (!atual->folha)
     {
       /* não sendo folha, chame a recursão e no retorno lide com eventual promoção de registro */
-      indice = buscaBinaria( atual->chave, atual->chaves, novo.ra);
-      propaga = insereRecursivo( atual->filho[indice], novo, ordem);
-      if (propaga.esq == NULL)
-	return propaga;      
-      novo = propaga.promovido;
+      indice = buscaBinaria( atual->chave, atual->chaves, novo->ra);
+      propaga = insereRecursivo( atual->filho[indice], novo);
+      if (propaga == NULL)
+	return NULL;      
+      novo = &(propaga->promovido);
     }
-
+  /* se for necessário quebrar a página */
   if (atual->chaves >= ordem -1)
     {
-      /* se for necessário quebrar a página */
-      promo.esq = atual;
+      promo = (promocao *) malloc(sizeof(promocao));
+      promo->esq = atual;
       /* copia registro a ser promovido */
-      promo.promovido = atual->chave[atual->chaves/2];
+      promo->promovido = atual->chave[atual->chaves/2];
       /* copia registros que vão pra nova página */
-      promo.dir = (pagina *) malloc (sizeof(pagina));
-      promo.dir->chave = malloc (sizeof(aluno)*atual->chaves/2);
-      promo.dir->chaves = atual->chaves/2;
-      memcpy(promo.dir->chave, atual->chave + atual->chaves/2 + 1, promo.dir->chaves*sizeof(aluno));
-      promo.dir->folha = atual->folha;
+      promo->dir = (pagina *) malloc (sizeof(pagina));
+      promo->dir->chave = malloc (sizeof(aluno)*atual->chaves/2);
+      promo->dir->chaves = atual->chaves/2;
+      memcpy(promo->dir->chave, atual->chave + atual->chaves/2 + 1, promo->dir->chaves*sizeof(aluno));
+      /* copia status de folha, e ponteiros se necessário */
+      promo->dir->folha = atual->folha;
       if (!atual->folha)
 	{
-	  promo.dir->filho = (pagina **) malloc (sizeof(pagina *)*(atual->chaves/2+1));
-	  memcpy(promo.dir->filho, atual->filho + atual->chaves/2+1, (promo.dir->chaves+1)*sizeof(pagina *));
+	  promo->dir->filho = (pagina **) malloc (sizeof(pagina *)*(atual->chaves/2+1));
+	  memcpy(promo->dir->filho, atual->filho + atual->chaves/2+1, (promo->dir->chaves+1)*sizeof(pagina *));
 	}
+      /* ajusta tamanho dos vetores */
       atual->chaves /= 2;
       atual->chave = realloc (atual->chave, atual->chaves*sizeof(aluno));
       if (!atual->folha)
 	  atual->filho = realloc (atual->filho, (atual->chaves+1)*sizeof(pagina *));
-      if (novo.ra < promo.promovido.ra)
-	atual = promo.esq;
-      else
-	atual = promo.dir;
+      /* troca de página se for preciso */
+      if (novo->ra > promo->promovido.ra)
+	atual = promo->dir;
     }
   else
-    promo.esq = NULL;
-  indice = buscaBinaria( atual->chave, atual->chaves, novo.ra);
+    /* marca a promoção como desnecessária */
+    promo = NULL;
+  /* encontra a posicao do novo elemento na página */
+  indice = buscaBinaria( atual->chave, atual->chaves, novo->ra);
+  /* redimensiona o vetor e desloca para a direita */
   atual->chave = realloc(atual->chave, (atual->chaves+1)*sizeof(aluno));
   memmove(atual->chave + indice + 1, atual->chave+indice, (atual->chaves++ - indice)*sizeof(aluno));
-  atual->chave[indice] = novo;
+  /* coloca registro na posição */
+  atual->chave[indice] = *novo;
   if (!atual->folha)
     {
-      atual->filho = realloc(atual->filho, (atual->chaves+1)*sizeof(pagina *)); /* conferir */
-      memmove(atual->filho + indice + 2, atual->filho+indice+1, (atual->chaves - (indice+1))*sizeof(pagina *)); /* conferir */
-      atual->filho[indice] = propaga.esq;
-      atual->filho[indice + 1] = propaga.dir;
+      /* redimensiona o vetor de ponteiros e desloca para a direita */
+      atual->filho = realloc(atual->filho, (atual->chaves+1)*sizeof(pagina *));
+      memmove(atual->filho + indice + 2, atual->filho+indice+1, (atual->chaves - (indice+1))*sizeof(pagina *));
+      /* coloca referências para as páginas resultantes da quebra */
+      atual->filho[indice] = propaga->esq;
+      atual->filho[indice + 1] = propaga->dir;
     }
+  free (propaga);
   return promo;      
 }
 
-void insereAluno (arvoreb * arvore, aluno novo)
+void insereAluno (arvoreb * arvore, aluno * novo)
 {
-  promocao novaraiz = insereRecursivo(arvore->raiz, novo, arvore->ordem);
-  if (novaraiz.esq == NULL)
+  ordem = arvore->ordem;  
+  promocao * novaraiz = insereRecursivo(arvore->raiz, novo);
+  if (novaraiz == NULL)
     return;
   /* constrói nova raiz */
   arvore->raiz = (pagina *) malloc (sizeof(pagina));
   arvore->raiz->chave = (aluno *) malloc (sizeof (aluno));
-  arvore->raiz->chave[0] = novaraiz.promovido;
+  arvore->raiz->chave[0] = novaraiz->promovido;
   arvore->raiz->chaves = 1;
   arvore->raiz->filho = (pagina **) malloc(sizeof(pagina *)*2);
-  arvore->raiz->filho[0] = novaraiz.esq;
-  arvore->raiz->filho[1] = novaraiz.dir;
+  arvore->raiz->filho[0] = novaraiz->esq;
+  arvore->raiz->filho[1] = novaraiz->dir;
   arvore->raiz->folha = FALSE;
+  free(novaraiz);  
 }
 
 void imprimeNivel( pagina * pagina, int nivel)
@@ -179,10 +203,12 @@ void imprimeArvoreB(arvoreb * arvore)
 void liberaPagina (pagina * p)
 {
   int i;
+  /* libera as chaves */
   free (p->chave);
   if (!p->folha)
     {
       for (i = 0; i <= p->chaves; i++)
+	/* libera filhos recursivamente */
 	liberaPagina(p->filho[i]);
       free (p->filho);
     }
