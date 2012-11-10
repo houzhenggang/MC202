@@ -14,13 +14,13 @@ int main()
   while (i-- > 0)
     {
       scanf (" %d %[^\n]s", &entrada.ra, entrada.nome);
-      printf ("\nInseriu %d\n", entrada.ra);
+      /* printf ("\nInseriu %d\n", entrada.ra); */
       insereAluno(arvore, entrada);
-      imprimeArvoreB(arvore);       
+      /* imprimeArvoreB(arvore);        */
     }
   scanf (" %d", &i);
-  /* if (!i) */
-  /*   imprimeArvoreB(arvore); */
+  if (!i) 
+    imprimeArvoreB(arvore);
   while (i-- > 0)
     {
       scanf(" %d", &leitura);
@@ -28,5 +28,6 @@ int main()
       if (retorno != NULL)
 	printf("%s\n",retorno->nome);
     }
+  deletaArvoreB(arvore);  
   return 0;
 }
