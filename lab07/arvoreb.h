@@ -1,32 +1,36 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-
-typedef struct _aluno
+typedef struct
 {
-	char nome[65];
-	int ra;
+  char nome[65];
+  int ra;
 } aluno;
 
-typedef struct _no
+typedef struct no
 {
-	aluno *Aluno;
-	struct _no *ant;
-	struct _no *dir;
-	struct _no **prox;
+  int filhos, chaves;  
+  aluno * chave;
+  struct no ** filho;
 } no;
 
-typedef struct _arvoreb
+typedef struct
 {
-	int ordem;
-	no *raiz;
+  int ordem;
+  no * raiz;
 } arvoreb;
 
+typedef struct
+{
+  aluno promovido;
+  no * esq, * dir;
+} promocao;
 
-no *no_cria(int ordem);
-arvoreb *arvoreb_cria(int ordem);
-no *propagano(arvoreb **parv, no *n, aluno a);
-void inserealuno(arvoreb **parv, no *n, no *prox, aluno a);
-void arvoreb_insere(arvoreb **parv, aluno a);
-void arvoreb_imprime_arv(arvoreb *arv);
-void arvoreb_consulta(arvoreb *arv, int ra);
+arvoreb * criaArvoreB(int);
+
+/* void deletaArvoreB(arvoreb *); */
+
+void insereAluno(arvoreb *, aluno);
+
+aluno * consultaRA(arvoreb *, int);
+
+void imprimeArvoreB (arvoreb *);
+
+
