@@ -8,6 +8,13 @@ arvoreb.h
 
 Assinaturas de funções para manipular árvores B.
 *******************************************************************************/
+#ifndef ARVOREB_H
+#define ARVOREB_H
+
+typedef enum  
+  {
+    FALSE, TRUE
+  } bool;
 
 typedef struct
 {
@@ -15,7 +22,19 @@ typedef struct
   int ra;
 } aluno;
 
-typedef struct arvoreb arvoreb;
+typedef struct pagina
+{
+  int chaves;  
+  aluno * chave;
+  bool folha;
+  struct pagina ** filho;
+} pagina;
+
+typedef struct
+{
+  int ordem;
+  pagina * raiz;
+} arvoreb;
 
 arvoreb * criaArvoreB(int);
 
@@ -27,4 +46,4 @@ aluno * consultaRA(arvoreb *, int);
 
 void imprimeArvoreB (arvoreb *);
 
-
+#endif

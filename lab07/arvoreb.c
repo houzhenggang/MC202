@@ -15,25 +15,6 @@ Implementa inserção, busca e impressão com árvore B.
 #include <string.h>
 #include <stdio.h>
 
-typedef enum  
-  {
-    FALSE, TRUE
-  } bool;
-
-typedef struct pagina
-{
-  int chaves;  
-  aluno * chave;
-  bool folha;
-  struct pagina ** filho;
-} pagina;
-
-typedef struct arvoreb
-{
-  int ordem;
-  pagina * raiz;
-} arvoreb;
-
 typedef struct
 {
   aluno promovido;
