@@ -185,6 +185,8 @@ void liberaPagina (pagina * p)
 {
   int i;
   /* libera as chaves */
+  for (i = 0; i < p->chaves; i++) 
+    free(p->chave[i].nome);
   free (p->chave);
   if (!p->folha)
     {

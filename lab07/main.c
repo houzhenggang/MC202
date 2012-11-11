@@ -26,7 +26,7 @@ int main()
   /* lê e insere alunos */
   while (i-- > 0)
     {
-      scanf (" %d %[^\n]s", &entrada.ra, entrada.nome);
+      scanf (" %d %m[^\n]s", &entrada.ra, &entrada.nome);
       insereAluno(arvore, &entrada);
     }
   scanf (" %d", &i);

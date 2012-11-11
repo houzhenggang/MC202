@@ -18,7 +18,7 @@ typedef enum
 
 typedef struct
 {
-  char nome[65];
+  char * nome;
   int ra;
 } aluno;
 
