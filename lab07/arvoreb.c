@@ -18,7 +18,7 @@ Implementa inserção, busca e impressão com árvore B.
 typedef struct
 {
   aluno promovido;
-  pagina * esq, * dir;
+  pagina * dir;
 } promocao;
 
 arvoreb * criaArvoreB (int ordemMinima)
@@ -84,10 +84,9 @@ promocao * insereRecursivo (pagina * atual, aluno * novo)
       novo = &(propaga->promovido);
     }
   /* se for necessário quebrar a página */
-  if (atual->chaves >= ordem -1)
+  if (atual->chaves >= ordem - 1)
     {
       promo = (promocao *) malloc(sizeof(promocao));
-      promo->esq = atual;
       atual->chaves /= 2;
       /* copia registro a ser promovido */
       promo->promovido = atual->chave[atual->chaves];
@@ -128,7 +127,6 @@ promocao * insereRecursivo (pagina * atual, aluno * novo)
       atual->filho = realloc(atual->filho, (atual->chaves+1)*sizeof(pagina *));
       memmove(atual->filho + indice + 2, atual->filho+indice+1, (atual->chaves - (indice+1))*sizeof(pagina *));
       /* coloca referências para as páginas resultantes da quebra */
-      atual->filho[indice] = propaga->esq;
       atual->filho[indice + 1] = propaga->dir;
     }
   free (propaga);
@@ -137,17 +135,20 @@ promocao * insereRecursivo (pagina * atual, aluno * novo)
 
 void insereAluno (arvoreb * arvore, aluno * novo)
 {
+  promocao * novaraiz;
+  pagina * temp;
   ordem = arvore->ordem;  
-  promocao * novaraiz = insereRecursivo(arvore->raiz, novo);
+  novaraiz = insereRecursivo(arvore->raiz, novo);
   if (novaraiz == NULL)
     return;
+  temp = arvore->raiz;
   /* constrói nova raiz */
   arvore->raiz = (pagina *) malloc (sizeof(pagina));
   arvore->raiz->chave = (aluno *) malloc (sizeof (aluno));
   arvore->raiz->chave[0] = novaraiz->promovido;
   arvore->raiz->chaves = 1;
   arvore->raiz->filho = (pagina **) malloc(sizeof(pagina *)*2);
-  arvore->raiz->filho[0] = novaraiz->esq;
+  arvore->raiz->filho[0] = temp;
   arvore->raiz->filho[1] = novaraiz->dir;
   free(novaraiz);  
 }
@@ -156,7 +157,7 @@ void imprimeNivel( pagina * pagina, int nivel)
 {
   int i;
   if (nivel)
-    for (i = 0; i < pagina->chaves+1; i++)
+    for (i = 0; i <= pagina->chaves; i++)
       imprimeNivel (pagina->filho[i], nivel-1);
   else
     {
