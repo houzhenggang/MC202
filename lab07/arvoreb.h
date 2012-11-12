@@ -11,11 +11,6 @@ Assinaturas de funções para manipular árvores B.
 #ifndef ARVOREB_H
 #define ARVOREB_H
 
-typedef enum  
-  {
-    FALSE, TRUE
-  } bool;
-
 typedef struct
 {
   char * nome;
@@ -26,7 +21,6 @@ typedef struct pagina
 {
   int chaves;  
   aluno * chave;
-  bool folha;
   struct pagina ** filho;
 } pagina;
 
