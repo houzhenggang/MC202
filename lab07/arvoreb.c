@@ -78,6 +78,8 @@ promocao * insereRecursivo (pagina * atual, aluno * novo)
     {
       /* não sendo folha, chame a recursão e no retorno lide com eventual promoção de registro */
       indice = buscaBinaria( atual->chave, atual->chaves, novo->ra);
+      if (indice < atual->chaves && atual->chave[indice].ra == novo->ra)
+	return NULL;
       propaga = insereRecursivo( atual->filho[indice], novo);
       if (propaga == NULL)
 	return NULL;      
